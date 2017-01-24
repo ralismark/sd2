@@ -1,8 +1,17 @@
+/* -*- cpp.doxygen -*- */
 #pragma once
 
 #include "priority_list.hpp"
 #include <functional>
 
+/**
+ * \class signal
+ * \brief callback container and emitter
+ *
+ * This uses the signal/slots design pattern (look on wikipedia) to allow
+ * attaching multiple callbacks to events. Provide the arguments for callbacks
+ * as the template parameters.
+ */
 template <typename... Args>
 class signal
 {

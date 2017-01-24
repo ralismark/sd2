@@ -1,9 +1,19 @@
+/* -*- cpp.doxygen -*- */
 #pragma once
 
 #include <list>
 #include <algorithm>
 #include <functional>
 
+/**
+ * \class priority_list
+ * \brief list always sorted based on a predicate
+ *
+ * Similar to a priority_queue, this guarantees that elements in the list are
+ * sorted. However, the iterators to elements are not invalidated when
+ * modifying the container, allowing references to elements (and modifying
+ * them).
+ */
 template <typename T, typename Compare = std::less<T>>
 class priority_list
 	: private std::list<T>
