@@ -1,3 +1,4 @@
+/* -*- cpp.doxygen -*- */
 #pragma once
 
 #include <utility>
@@ -8,7 +9,17 @@
 
 #include "config.hpp"
 
-// singleton, access through deref
+/**
+ * \class stdwindow
+ * \brief sfml window singleton
+ *
+ * Since most programs only need one window, this class is provided to provide
+ * a way to access and control it. Generally, it acts as a `pointer', using the
+ * dereference operators to access the underlying singleton.
+ *
+ * The configuration of the window is done using macros. See config.hpp for
+ * defaults, as well as the format of certain options.
+ */
 class stdwindow
 {
 public: // statics

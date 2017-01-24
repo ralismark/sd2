@@ -1,8 +1,17 @@
+/* -*- cpp.doxygen -*- */
 #pragma once
 
 #include <sfml/window.hpp>
 #include "window.cpp"
 
+/**
+ * \class event_iterator
+ * \brief Input iterator for getting window events
+ *
+ * This is a way of getting sfml window event through an iterator. Combined
+ * with event_queue, this allows a range-for loop to be used, which cleans up
+ * code.
+ */
 class event_iterator
 {
 public: // statics
@@ -61,6 +70,14 @@ public: // methods
 
 };
 
+/**
+ * \class event_queue
+ * \brief event_iterator creator
+ *
+ * This is a container-like class that allows iterating over the pending events
+ * of a window. begin() and end() members are provided to create this
+ * functionality.
+ */
 class event_queue
 {
 private: // variables
