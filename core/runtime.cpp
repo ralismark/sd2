@@ -8,9 +8,9 @@
 #include <iostream>
 #include <typeinfo>
 
-#include "window.cpp"
-#include "event.cpp"
-#include "include/sigslots.hpp"
+#include "disp/window.cpp"
+#include "core/event.cpp"
+#include "core/sigslots.hpp"
 
 /**
  * \namespace rt
