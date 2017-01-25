@@ -2,7 +2,7 @@
 #pragma once
 
 #include <sfml/window.hpp>
-#include "window.cpp"
+#include "disp/window.cpp"
 
 /**
  * \class event_iterator
