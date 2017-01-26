@@ -1,5 +1,11 @@
 #pragma once
 
+#define _pp_concat_(a, b) a##b
+#define _pp_concat(a, b) _pp_concat_(a, b)
+
+#define _pp_stringify_(s) #s
+#define _pp_stringify(s) _pp_stringify_(s)
+
 #if defined(_MSC_VER) && !defined(__clang__)
 	#define _pp_pragma(s) _Pragma(#s)
 #else
