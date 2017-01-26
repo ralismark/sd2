@@ -62,7 +62,6 @@ public: // methods
  */
 class switchboard
 {
-	friend class sboard_ctl;
 public: // statics
 	using id_type = int;
 
@@ -131,39 +130,6 @@ private: // internal statics
 				istep = false;
 			}
 
-			switch(s) {
-			case state::idle:
-				std::cout << "idle";
-				break;
-			case state::hover:
-				std::cout << "hover";
-				break;
-			case state::active:
-				std::cout << "active";
-				break;
-			case state::persist:
-				std::cout << "persist";
-				break;
-			}
-
-			std::cout << " -> ";
-
-			switch(new_s) {
-			case state::idle:
-				std::cout << "idle";
-				break;
-			case state::hover:
-				std::cout << "hover";
-				break;
-			case state::active:
-				std::cout << "active";
-				break;
-			case state::persist:
-				std::cout << "persist";
-				break;
-			}
-			std::cout << '\n';
-
 			s = new_s;
 		}
 	};
@@ -171,7 +137,6 @@ private: // internal statics
 private: // variables
 
 	std::map<id_type, binfo> buttons;
-	vec2i prev;
 
 public: // variables
 public: // statics
