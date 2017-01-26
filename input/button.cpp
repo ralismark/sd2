@@ -3,10 +3,11 @@
 
 #include <map>
 
-#include <sfml/Graphics/Rect.hpp>
+#include <sfml/graphics/rect.hpp>
 
 #include "include/sigslots.hpp"
 #include "include/vector.hpp"
+#include "disp/window.cpp"
 
 /**
  * \class button
