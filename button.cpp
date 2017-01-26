@@ -106,28 +106,25 @@ private: // internal statics
 
 		void transition(state new_s)
 		{
+			if(new_s == s) {
+				return; // not a transition
+			}
+
 			// ensure only valid transitions happen
 			// this is done through defined intermediary steps
-			bool istep = true;
+			// then the main transition takes place
 
 			/*  */ if(s == state::idle && new_s == state::active) {
 				this->transition(state::hover);
-				this->transition(state::active);
 			} else if(s == state::idle && new_s == state::persist) {
 				this->transition(state::hover);
 				this->transition(state::active);
-				this->transition(state::persist);
 			} else if(s == state::hover && new_s == state::persist) {
 				this->transition(state::active);
-				this->transition(state::persist);
 			} else if(s == state::active && new_s == state::idle) {
 				this->transition(state::persist);
-				this->transition(state::idle);
 			} else if(s == state::persist && new_s == state::hover) {
 				this->transition(state::active);
-				this->transition(state::hover);
-			} else {
-				istep = false;
 			}
 
 			s = new_s;
@@ -197,6 +194,7 @@ public: // statics
 	{
 		if(this->exists(id)) {
 			this->get(id)->active = active;
+			buttons[id].transition(state::idle); // either mode must begin from idle
 		}
 	}
 
