@@ -1,3 +1,4 @@
+/* -*- cpp.doxygen -*- */
 #pragma once
 
 #include <map>
@@ -7,6 +8,14 @@
 #include "include/sigslots.hpp"
 #include "include/vector.hpp"
 
+/**
+ * \class button
+ * \brief bare button config
+ *
+ * This class contains a minimal set of members which are able to define a
+ * button. This does not contain any functionality - that is provided by the
+ * switchboard class.
+ */
 class button
 {
 public: // statics
@@ -40,7 +49,18 @@ public: // methods
 	}
 };
 
-class switchboard // group of buttons
+/**
+ * \class switchboard
+ * \brief button manager
+ *
+ * This class contains a group of buttons, linked to their own ID's. A
+ * switchboard also processes incoming events to allow reacting to specific
+ * triggers (see below).
+ *
+ * Each button is implemented as a finite state machine, the details can be
+ * seen below.
+ */
+class switchboard
 {
 	friend class sboard_ctl;
 public: // statics
@@ -78,8 +98,6 @@ public: // statics
 	 * MouseButtonReleased, there is no way for ambiguity between
 	 * transitions, e.g. the mouse both moves and presses the button.
 	 */
-
-	// TODO(timmy): now to implement it!
 
 private: // internal statics
 
