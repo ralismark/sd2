@@ -193,7 +193,7 @@ public: // statics
 	void set_state(id_type id, bool active)
 	{
 		if(this->exists(id)) {
-			this->get(id)->active = active;
+			buttons[id].b.active = active;
 			buttons[id].transition(state::idle); // either mode must begin from idle
 		}
 	}
@@ -231,6 +231,9 @@ public: // statics
 
 			for(auto& pair : buttons) {
 				auto& bi = pair.second;
+				if(!bi.b.active) {
+					continue;
+				}
 
 				bool contained = wincontained && bi.b.contains(pos);
 				if(bi.s == state::idle && contained) {
@@ -258,6 +261,9 @@ public: // statics
 
 			for(auto& pair : buttons) {
 				auto& bi = pair.second;
+				if(!bi.b.active) {
+					continue;
+				}
 
 				bool contained = wincontained && bi.b.contains(pos);
 				if(contained) {
@@ -280,6 +286,9 @@ public: // statics
 
 			for(auto& pair : buttons) {
 				auto& bi = pair.second;
+				if(!bi.b.active) {
+					continue;
+				}
 
 				bool contained = wincontained && bi.b.contains(pos);
 				if(bi.s == state::persist && contained) {
@@ -302,6 +311,9 @@ public: // statics
 			 */
 			for(auto& pair : buttons) {
 				auto& bi = pair.second;
+				if(!bi.b.active) {
+					continue;
+				}
 
 				if(bi.s != state::idle) {
 					bi.transition(state::idle);
@@ -315,6 +327,9 @@ public: // statics
 			 */
 			for(auto& pair : buttons) {
 				auto& bi = pair.second;
+				if(!bi.b.active) {
+					continue;
+				}
 
 				if(bi.s == state::hover) {
 					bi.transition(state::idle);
