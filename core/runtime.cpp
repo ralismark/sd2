@@ -97,7 +97,7 @@ namespace rt {
 	 * Note that the window close event has an extra special handler which
 	 * is always triggered after all user-defined events.
 	 */
-	signal<sf::Event> on_win_event;
+	signal<const sf::Event&> on_win_event;
 
 	/**
 	 * \var on_frame
