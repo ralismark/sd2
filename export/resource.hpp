@@ -1,7 +1,7 @@
 #pragma once
 
 #include "dllport.hpp"
-#include "../include/types.hpp"
+#include "core/types.hpp"
 
 _dll_lib_("resource.lib")
 

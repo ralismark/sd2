@@ -8,9 +8,9 @@
 #include <iostream>
 #include <typeinfo>
 
-#include "window.cpp"
-#include "event.cpp"
-#include "include/sigslots.hpp"
+#include "disp/window.cpp"
+#include "core/event.cpp"
+#include "core/sigslots.hpp"
 
 /**
  * \namespace rt
@@ -97,7 +97,7 @@ namespace rt {
 	 * Note that the window close event has an extra special handler which
 	 * is always triggered after all user-defined events.
 	 */
-	signal<sf::Event> on_win_event;
+	signal<const sf::Event&> on_win_event;
 
 	/**
 	 * \var on_frame
