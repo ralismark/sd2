@@ -9,7 +9,7 @@
 #include <typeinfo>
 
 #include "disp/window.cpp"
-#include "core/event.cpp"
+#include "core/event.hpp"
 #include "core/sigslots.hpp"
 
 /**
