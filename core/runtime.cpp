@@ -118,6 +118,18 @@ namespace rt {
 	 */
 	unsigned long long frame;
 
+	/**
+	 * \var argc
+	 * \var argv
+	 * \brief program parameters
+	 *
+	 * These are set to be the argc and argv passed to main as command line
+	 * arguments. Note that GUI programs are usually not provided with
+	 * arguments.
+	 */
+	int argc;
+	char** argv;
+
 } // namespace rt
 
 /**
@@ -130,8 +142,11 @@ namespace rt {
  */
 void initial();
 
-int main() try
+int main(int argc, char** argv) try
 {
+	rt::argc = argc;
+	rt::argv = argv;
+
 	int exit_code = 0;
 	try {
 		initial();
