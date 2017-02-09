@@ -7,8 +7,6 @@
 
 #include "include/vector.hpp"
 
-#include "config.hpp"
-
 /**
  * \class stdwindow
  * \brief sfml window singleton
@@ -27,9 +25,9 @@ public: // statics
 	using window_type = sf::RenderWindow;
 
 	// confix
-	static constexpr auto winname = CFG_WINNAME;
-	static constexpr auto winstyle = CFG_WINSTYLE;
-	static constexpr auto winfps = CFG_WINFPS;
+	static constexpr auto winname = "Standard window";
+	static constexpr auto winstyle = sf::Style::Titlebar | sf::Style::Close;
+	static constexpr auto winfps = 30;
 	static const vec2i winsize;
 
 private: // internal statics
@@ -107,6 +105,6 @@ public: // methods
 
 };
 
-const vec2i stdwindow::winsize(CFG_WINSIZE);
+const vec2i stdwindow::winsize(1024, 600);
 
 stdwindow stdwin;
