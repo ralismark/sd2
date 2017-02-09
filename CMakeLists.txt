@@ -22,6 +22,9 @@ set(CMAKE_REQUIRED_FLAGS ${CPP17_FLAG})
 check_include_file_cxx(optional HAS_OPTIONAL)
 if(NOT HAS_OPTIONAL)
 	check_include_file_cxx(experimental/optional HAS_EXP_OPTIONAL)
+	if(NOT HAS_EXP_OPTIONAL)
+		message(WARNING "<optional> and <experimental/optional> not available")
+	endif()
 endif()
 
 configure_file(
