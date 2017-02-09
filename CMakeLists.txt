@@ -33,7 +33,7 @@ include_directories("${PROJECT_BINARY_DIR}/h")
 # source
 add_subdirectory(export)
 
-include_directories("${CMAKE_SOURCE_DIR}")
+include_directories("${PROJECT_SOURCE_DIR}")
 add_executable(evtest evtest.cpp)
 
 add_executable(all_check all.cpp)
