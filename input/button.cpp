@@ -5,7 +5,7 @@
 
 #include <sfml/graphics/rect.hpp>
 
-#include "include/sigslots.hpp"
+#include "core/sigslots.hpp"
 #include "include/vector.hpp"
 #include "disp/window.cpp"
 
@@ -228,7 +228,7 @@ public: // statics
 			}
 
 			vec2i pos(e.mouseMove.x, e.mouseMove.y);
-			bool wincontained = winarea.contains(pos);
+			bool wincontained = winarea.contains(pos.x, pos.y);
 
 			for(auto& pair : buttons) {
 				auto& bi = pair.second;
@@ -258,7 +258,7 @@ public: // statics
 			}
 			// a press requires focus - we don't care
 			vec2i pos(e.mouseButton.x, e.mouseButton.y);
-			bool wincontained = winarea.contains(pos);
+			bool wincontained = winarea.contains(pos.x, pos.y);
 
 			for(auto& pair : buttons) {
 				auto& bi = pair.second;
@@ -283,7 +283,7 @@ public: // statics
 			// note: this event may not trigger if focus is lost
 
 			vec2i pos(e.mouseButton.x, e.mouseButton.y);
-			bool wincontained = winarea.contains(pos);
+			bool wincontained = winarea.contains(pos.x, pos.y);
 
 			for(auto& pair : buttons) {
 				auto& bi = pair.second;
