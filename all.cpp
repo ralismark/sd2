@@ -11,8 +11,6 @@
 
 // all includes
 
-#include "config.hpp"
-
 #include "core/event.hpp"
 #include "core/preproc.hpp"
 #include "core/priority_list.hpp"
