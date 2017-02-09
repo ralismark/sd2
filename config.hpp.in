@@ -1,0 +1,8 @@
+#pragma once
+
+/*
+ * cmake-generated file
+ */
+
+#cmakedefine HAS_OPTIONAL
+#cmakedefine HAS_EXP_OPTIONAL
