@@ -2,11 +2,11 @@
 // this ensures that all files are syntactically correct
 // additionally, this ensures that all headers are correctly guarded against multiple inclusions
 
-#ifndef ALL_INCLUDE_COUNT
-	#define ALL_INCLUDE_COUNT 1
+#ifndef ALL_INCLUDE
+	#define ALL_INCLUDE 1
 #else
-	#undef ALL_FIRST_COUNT
-	#define ALL_FIRST_COUNT 2
+	#undef ALL_INCLUDE
+	#define ALL_INCLUDE 2
 #endif
 
 // all includes
