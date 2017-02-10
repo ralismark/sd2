@@ -27,6 +27,18 @@ if(NOT HAS_OPTIONAL)
 	endif()
 endif()
 
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+	set(COMPILER_CLANG 1)
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+	set(COMPILER_GCC 1)
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+	set(COMPILER_MSVC 1)
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+	set(COMPILER_ICC 1)
+else()
+	message(FATAL_MESSAGE "Unknown compiler")
+endif()
+
 configure_file(
 	"${PROJECT_SOURCE_DIR}/config.hpp.in"
 	"${PROJECT_BINARY_DIR}/h/config.hpp"
