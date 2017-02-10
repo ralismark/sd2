@@ -4,10 +4,10 @@ include(CheckIncludeFileCXX)
 project(sd2)
 
 # C++17 support
-if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU"))
+if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU"))
 	# using Clang or GCC
 	set(CPP17_FLAG "-std=c++1z")
-elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 	# using Visual Studio C++
 	set(CPP17_FLAG "/std:c++latest")
 else()
@@ -36,7 +36,7 @@ include_directories("${PROJECT_BINARY_DIR}/h")
 # source
 include_directories("${PROJECT_SOURCE_DIR}")
 
+add_subdirectory(export)
+
 add_executable(evtest evtest.cpp)
 add_executable(all_check all.cpp)
-
-add_subdirectory(export)
