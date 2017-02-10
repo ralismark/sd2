@@ -172,6 +172,7 @@ int main(int argc, char** argv) try
 
 				++rt::frame;
 			} catch(const rt::detail::skipframe_signaller& e) {
+				(void)(e);
 				// go to next frame
 			}
 		}
