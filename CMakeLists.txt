@@ -52,3 +52,4 @@ add_subdirectory(export)
 
 add_executable(evtest evtest.cpp)
 add_executable(all_check all.cpp)
+add_executable(sort sort.cpp)
