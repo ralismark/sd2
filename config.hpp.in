@@ -1,0 +1,13 @@
+#pragma once
+
+/*
+ * cmake-generated file
+ */
+
+#cmakedefine HAS_OPTIONAL
+#cmakedefine HAS_EXP_OPTIONAL
+
+#cmakedefine COMPILER_MSVC
+#cmakedefine COMPILER_GCC
+#cmakedefine COMPILER_CLANG
+#cmakedefine COMPILER_ICC
