@@ -1,9 +1,11 @@
 #pragma once
 
+#ifdef resource_EXPORTS
+#define EXPORTS
+#endif
+
 #include "dllport.hpp"
 #include "core/types.hpp"
-
-_dll_lib_("resource.lib")
 
 extern "C" {
 
