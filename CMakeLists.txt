@@ -4,12 +4,12 @@ include(CheckIncludeFileCXX)
 project(sd2)
 
 # C++17 support
-if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU"))
-	# using Clang or GCC
-	set(CPP17_FLAG "-std=c++1z")
-elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC" OR "${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC")
 	# using Visual Studio C++
 	set(CPP17_FLAG "/std:c++latest")
+elseif(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU"))
+	# using Clang or GCC
+	set(CPP17_FLAG "-std=c++1z")
 else()
 	# includes Intel C++
 	message(FATAL_MESSAGE "Compiler not supported, but may be in the future")
