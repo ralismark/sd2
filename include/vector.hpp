@@ -1,7 +1,18 @@
 #pragma once
 
+#include "core/preproc.hpp"
+
+_pp_warn_push();
+
+#if defined(COMPILER_MSVC)
+	_pp_warn_stop(4244);
+#endif
+
+
 #include "depends/CxxSwizzle/include/swizzle/glsl/scalar_support.h"
 #include "depends/CxxSwizzle/include/swizzle/glsl/vector.h"
+
+_pp_warn_pop();
 
 template <typename T, size_t N>
 using vector = swizzle::glsl::vector<T, N>;

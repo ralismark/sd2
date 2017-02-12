@@ -16,6 +16,9 @@ else()
 endif()
 add_compile_options(${CPP17_FLAG})
 
+# CRT warnings
+add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+
 # config header
 set(CMAKE_REQUIRED_FLAGS ${CPP17_FLAG})
 
