@@ -31,6 +31,8 @@ enum class method : int {
 	insertionsort,
 	bitonicsort,
 	halfsort,
+	permute,
+	shuffle,
 };
 
 std::string get_name(method m)
@@ -54,6 +56,10 @@ std::string get_name(method m)
 		return "bitonic sort";
 	case method::halfsort:
 		return "half sort";
+	case method::permute:
+		return "permutations";
+	case method::shuffle:
+		return "shuffles";
 	}
 }
 
@@ -545,6 +551,17 @@ void sort_algo(Iter first, Iter last)
 		break;
 	case method::halfsort:
 		salgo::halfsort(first, last);
+		break;
+	case method::permute:
+		std::sort(first, last);
+		while(1) {
+			std::next_permutation(first, last);
+		}
+		break;
+	case method::shuffle:
+		while(1) {
+			std::shuffle(first, last, central::rng.engine());
+		}
 		break;
 	}
 
