@@ -94,7 +94,8 @@ namespace central {
 		std::atomic<bool> render_run = false;
 
 		// signal for the other thread to run
-		std::condition_variable cv;
+		std::condition_variable sort_cv;
+		std::condition_variable main_cv;
 
 		struct element { // {{{
 			// we are assuming that values in the list are never destructed, only swapped (or moved)
@@ -208,7 +209,7 @@ namespace central {
 			std::unique_lock<std::mutex> lock(data_lock);
 
 			if(lockstep) {
-				cv.wait(lock, [] { return sort_run.load(); });
+				sort_cv.wait(lock, [] { return sort_run.load(); });
 				sort_run = false;
 			}
 
@@ -217,7 +218,7 @@ namespace central {
 			if(lockstep) {
 				render_run = true;
 				lock.unlock();
-				cv.notify_one();
+				main_cv.notify_one();
 			}
 		}
 
@@ -286,12 +287,12 @@ namespace central {
 		if(!sort_finished.load()) {
 			{ // signal sorting thread to run
 				thread::sort_run = true;
-				thread::cv.notify_one();
+				thread::sort_cv.notify_one();
 			}
 
 			{ // wait for worker
 				std::unique_lock<std::mutex> lock(thread::data_lock);
-				thread::cv.wait(lock, [] { return thread::render_run.load(); });
+				thread::main_cv.wait(lock, [] { return thread::render_run.load(); });
 				thread::render_run = false;
 			}
 		}
@@ -363,11 +364,13 @@ namespace central {
 
 	void var_clean()
 	{
-		// make sort thread continue running
-		thread::sort_run = true;
-		thread::cv.notify_one();
-
 		sort_finish_request = true;
+
+		// make sort threads continue running
+		while(!sort_finished && sort_thread.joinable()) {
+			thread::sort_run = true;
+			thread::sort_cv.notify_one();
+		}
 
 		if(sort_thread.joinable()) {
 			sort_thread.join();
