@@ -31,6 +31,7 @@ enum class method : int {
 	insertionsort,
 	bitonicsort,
 	halfsort,
+	merge2sort,
 	permute,
 	shuffle,
 };
@@ -56,6 +57,8 @@ std::string get_name(method m)
 		return "bitonic sort";
 	case method::halfsort:
 		return "half sort";
+	case method::merge2sort:
+		return "merge (variant)";
 	case method::permute:
 		return "permutations";
 	case method::shuffle:
@@ -506,6 +509,29 @@ namespace salgo { // {{{
 		}
 	}
 
+	template <typename Iter>
+	void merge2sort(Iter first, Iter last)
+	{
+		size_t step = 1;
+		while(step < last - first) {
+			auto left = first, mid = first + step;
+			while(mid < last) {
+				auto right = (last - mid > step) ? mid + step : last;
+
+				std::inplace_merge(left, mid, right);
+
+				left = right;
+				if(last - right > step) {
+					mid = right + step;
+				} else {
+					break;
+				}
+			}
+
+			step <<= 1;
+		}
+	}
+
 } // }}}
 
 static constexpr method selected_sorts[] = {
@@ -554,6 +580,9 @@ void sort_algo(Iter first, Iter last)
 		break;
 	case method::halfsort:
 		salgo::halfsort(first, last);
+		break;
+	case method::merge2sort:
+		salgo::merge2sort(first, last);
 		break;
 	case method::permute:
 		std::sort(first, last);
