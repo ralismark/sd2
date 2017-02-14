@@ -66,6 +66,16 @@ std::string get_name(method m)
 	}
 }
 
+unsigned int parallel_limit()
+{
+	return -1;
+	auto lim = std::thread::hardware_concurrency() - 1;
+	if(lim == 0) {
+		return (1 << 3) - 1;
+	}
+	return lim;
+}
+
 method get_current_method();
 
 namespace central {
@@ -385,7 +395,7 @@ namespace central {
 namespace salgo { // {{{
 
 	template <typename Iter>
-	void bitonic_merge(Iter first, Iter last, bool dir)
+	void bitonicmerge(Iter first, Iter last, bool dir, int depth = 0)
 	{
 		auto dist = last - first;
 		if(dist <= 1) {
@@ -408,12 +418,18 @@ namespace salgo { // {{{
 			}
 		}
 
-		bitonic_merge(first, mid, dir);
-		bitonic_merge(mid, last, dir);
+		if((1 << depth) < parallel_limit()) {
+			auto task = std::async(std::launch::async, bitonicmerge<Iter>, first, mid, dir, depth + 1);
+			bitonicmerge(mid, last, dir, depth + 1);
+			task.wait();
+		} else {
+			bitonicmerge(first, mid, dir, depth + 1);
+			bitonicmerge(mid, last, dir, depth + 1);
+		}
 	}
 
 	template <typename Iter>
-	void bitonic_sort2(Iter first, Iter last, bool dir = true)
+	void bitonicsort(Iter first, Iter last, bool dir = true, int depth = 0)
 	{
 		auto dist = last - first;
 		if(dist <= 1) {
@@ -421,39 +437,41 @@ namespace salgo { // {{{
 		}
 		auto mid = first + (dist / 2);
 
-		bitonic_sort2(first, mid, !dir);
-		bitonic_sort2(mid, last, dir);
+		if((1 << depth) < parallel_limit()) {
+			auto task = std::async(std::launch::async, bitonicsort<Iter>, first, mid, !dir, depth + 1);
+			bitonicsort(mid, last, dir, depth + 1);
+			task.wait();
+		} else {
+			bitonicsort(first, mid, !dir, depth + 1);
+			bitonicsort(mid, last, dir, depth + 1);
+		}
 
-		bitonic_merge(first, last, dir);
-	}
-
-	template <typename Iter>
-	void bitonic_sort(Iter first, Iter last)
-	{
-		auto mid = first + (last - first) / 2;
-		bool dir = true;
-
-		bitonic_sort2(first, mid, !dir);
-		bitonic_sort2(mid, last, dir);
-
-		bitonic_merge(first, last, dir);
+		bitonicmerge(first, last, dir, depth);
 	}
 
 	template<class Iter>
-	void mergesort(Iter first, Iter last)
+	void mergesort(Iter first, Iter last, int depth = 0)
 	{
-		if (last - first > 1) {
-			Iter middle = first + (last - first) / 2;
-
-			mergesort(first, middle);
-			mergesort(middle, last);
-
-			std::inplace_merge(first, middle, last);
+		auto dist = last - first;
+		if(dist <= 1) {
+			return;
 		}
+		Iter middle = first + dist / 2;
+
+		if((1 << depth) < parallel_limit()) {
+			auto task = std::async(std::launch::async, mergesort<Iter>, first, middle, depth + 1);
+			mergesort(middle, last, depth + 1);
+			task.wait();
+		} else {
+			mergesort(first, middle, depth + 1);
+			mergesort(middle, last, depth + 1);
+		}
+
+		std::inplace_merge(first, middle, last);
 	}
 
 	template <typename Iter>
-	void quicksort(Iter first, Iter last)
+	void quicksort(Iter first, Iter last, int depth = 0)
 	{
 		if(first == last) {
 			return;
@@ -464,8 +482,14 @@ namespace salgo { // {{{
 		auto partpoint = std::partition(first, pivot_point, [&](const auto& e) { return e <= pivot; });
 		std::iter_swap(pivot_point, partpoint);
 
-		quicksort(first, partpoint);
-		quicksort(partpoint + 1, last);
+		if((1 << depth) < parallel_limit()) {
+			auto task = std::async(std::launch::async, quicksort<Iter>, first, partpoint, depth + 1);
+			quicksort(partpoint + 1, last, depth + 1);
+			task.wait();
+		} else {
+			quicksort(first, partpoint, depth + 1);
+			quicksort(partpoint + 1, last, depth + 1);
+		}
 	}
 
 	template <typename Iter>
@@ -497,15 +521,21 @@ namespace salgo { // {{{
 	}
 
 	template <typename Iter>
-	void halfsort(Iter first, Iter last)
+	void halfsort(Iter first, Iter last, int depth = 0)
 	{
 		auto dist = last - first;
 		if(dist > 1) {
 			auto mid = first + dist / 2;
 			std::nth_element(first, mid, last);
 
-			halfsort(first, mid);
-			halfsort(mid, last);
+			if((1 << depth) < parallel_limit()) {
+				auto task = std::async(std::launch::async, halfsort<Iter>, first, mid, depth + 1);
+				halfsort(mid, last, depth + 1);
+				task.wait();
+			} else {
+				halfsort(first, mid, depth + 1);
+				halfsort(mid, last, depth + 1);
+			}
 		}
 	}
 
@@ -576,7 +606,7 @@ void sort_algo(Iter first, Iter last)
 		salgo::insertionsort(first, last);
 		break;
 	case method::bitonicsort:
-		salgo::bitonic_sort(first, last);
+		salgo::bitonicsort(first, last);
 		break;
 	case method::halfsort:
 		salgo::halfsort(first, last);
