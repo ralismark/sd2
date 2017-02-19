@@ -121,14 +121,19 @@ namespace rt {
 	/**
 	 * \var argc
 	 * \var argv
+	 * \var pgname
 	 * \brief program parameters
 	 *
 	 * These are set to be the argc and argv passed to main as command line
-	 * arguments. Note that GUI programs are usually not provided with
-	 * arguments.
+	 * arguments. These may be modified for internal use before being
+	 * available to the developer. Note that GUI programs are usually not
+	 * provided with arguments.
+	 *
+	 * pgname is set to argv[0] - the name of the program.
 	 */
 	int argc;
 	char** argv;
+	char* pgname;
 
 } // namespace rt
 
@@ -146,6 +151,7 @@ int main(int argc, char** argv) try
 {
 	rt::argc = argc;
 	rt::argv = argv;
+	rt::pgname = argv[0];
 
 	int exit_code = 0;
 	try {
