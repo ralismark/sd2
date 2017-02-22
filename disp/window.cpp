@@ -26,9 +26,9 @@ public: // statics
 
 	// confix
 	static constexpr auto winname = "Standard window";
-	static constexpr auto winstyle = sf::Style::Titlebar | sf::Style::Close;
-	static constexpr auto winfps = 30;
-	static const vec2i winsize;
+	static int winstyle;
+	static int winfps;
+	static vec2i winsize;
 
 private: // internal statics
 
@@ -58,7 +58,9 @@ public: // methods
 	void init()
 	{
 		this->window().create(sf::VideoMode(winsize.x, winsize.y), winname, winstyle);
-		this->window().setFramerateLimit(winfps);
+		if(winfps > 0) {
+			this->window().setFramerateLimit(winfps);
+		}
 	}
 
 	explicit operator bool() const
@@ -105,6 +107,8 @@ public: // methods
 
 };
 
-const vec2i stdwindow::winsize(1024, 600);
+int stdwindow::winstyle;
+int stdwindow::winfps;
+vec2i stdwindow::winsize;
 
 stdwindow stdwin;
