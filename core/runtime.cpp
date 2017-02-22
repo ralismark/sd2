@@ -11,6 +11,7 @@
 #include "disp/window.cpp"
 #include "core/event.hpp"
 #include "core/sigslots.hpp"
+#include "core/opts.cpp"
 
 /**
  * \namespace rt
@@ -152,6 +153,17 @@ int main(int argc, char** argv) try
 	rt::argc = argc;
 	rt::argv = argv;
 	rt::pgname = argv[0];
+
+	auto opt_parse_result = rt::opt::parse(argc, argv);
+	if(opt_parse_result == rt::opt::parse_help) {
+		return 0;
+	} else if(opt_parse_result == rt::opt::parse_fail) {
+		return 1;
+	}
+
+	stdwindow::winstyle = rt::opt::wstyle;
+	stdwindow::winfps = rt::opt::wfps.value_or(0);
+	stdwindow::winsize = rt::opt::wsize;
 
 	int exit_code = 0;
 	try {
