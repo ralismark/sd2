@@ -10,7 +10,7 @@
 
 #include "disp/window.cpp"
 #include "core/event.hpp"
-#include "core/sigslots.hpp"
+#include "include/sigslots.hpp"
 #include "core/opts.cpp"
 
 /**

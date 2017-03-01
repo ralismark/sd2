@@ -12,11 +12,7 @@
 // all includes
 
 #include "core/event.hpp"
-#include "core/preproc.hpp"
-#include "core/priority_list.hpp"
 #include "core/runtime.cpp"
-#include "core/sigslots.hpp"
-#include "core/types.hpp"
 
 #include "disp/window.cpp"
 
@@ -26,7 +22,11 @@
 
 #include "include/fmt.hpp"
 #include "include/optional.hpp"
+#include "include/preproc.hpp"
+#include "include/priority_list.hpp"
 #include "include/randutils.hpp"
+#include "include/sigslots.hpp"
+#include "include/types.hpp"
 #include "include/vector.hpp"
 #include "include/win32.hpp"
 

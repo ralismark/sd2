@@ -1,7 +1,7 @@
 /* -*- cpp.doxygen -*- */
 #pragma once
 
-#include "core/priority_list.hpp"
+#include "priority_list.hpp"
 #include <functional>
 
 /**

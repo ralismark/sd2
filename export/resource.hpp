@@ -5,7 +5,7 @@
 #endif
 
 #include "dllport.hpp"
-#include "core/types.hpp"
+#include "include/types.hpp"
 
 extern "C" {
 
