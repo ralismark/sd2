@@ -33,6 +33,9 @@
 #include "input/button.cpp"
 #include "input/keystate.cpp"
 
+#include "res/except.hpp"
+#include "res/resource.hpp"
+
 // re-include everything
 #if ALL_INCLUDE < 2
 // first run
