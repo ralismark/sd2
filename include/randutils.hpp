@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/preproc.hpp"
+#include "preproc.hpp"
 
 _pp_warn_push();
 

@@ -21,7 +21,7 @@ namespace central {
 		star_point()
 			: pos(), shape()
 		{
-			shape.setOrigin(-stdwin.winsize.x / 2, -stdwin.winsize.y / 2);
+			shape.setOrigin(float(-stdwin.winsize.x / 2), float(-stdwin.winsize.y / 2));
 			shape.setSize(sf::Vector2f(1, 1));
 
 			this->reposition();
@@ -39,11 +39,11 @@ namespace central {
 
 		void update_shape()
 		{
-			double value = pos.z > max_z ? 0 : (1 - (pos.z / max_z));
-			shape.setFillColor(sf::Color(value * 255, value * 255, value * 255));
+			auto value = (unsigned char)((pos.z > max_z ? 0 : (1 - (pos.z / max_z))) * 255);
+			shape.setFillColor(sf::Color(value, value, value));
 
 			vec2 view_pos(10 * pos.x / pos.z, 10 * pos.y / pos.z);
-			shape.setPosition(view_pos.x, view_pos.y);
+			shape.setPosition(float(view_pos.x), float(view_pos.y));
 		}
 	};
 

@@ -5,7 +5,7 @@
 
 #include <sfml/graphics/rect.hpp>
 
-#include "core/sigslots.hpp"
+#include "include/sigslots.hpp"
 #include "include/vector.hpp"
 #include "disp/window.cpp"
 
