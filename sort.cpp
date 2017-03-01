@@ -1,37 +1,114 @@
 #include "core/runtime.cpp"
 #include "include/randutils.hpp"
 
+#include "export/resource.hpp"
+
 #include <sfml/graphics.hpp>
 
-#include <algorithm>
-#include <numeric>
+#include <future>
 #include <mutex>
 #include <thread>
 #include <condition_variable>
 #include <atomic>
+
+#include <algorithm>
+#include <numeric>
 #include <variant>
 
-constexpr int data_size = 4000;
+constexpr int data_size = 100;
 constexpr int data_max = data_size;
 
 template <typename Iter>
 void sort_algo(Iter first, Iter last);
 
+enum class method : int {
+	bubblesort,
+	std_sort,
+	std_stable_sort,
+	heapsort,
+	quicksort,
+	mergesort,
+	insertionsort,
+	bitonicsort,
+	halfsort,
+	merge2sort,
+	permute,
+	shuffle,
+};
+
+std::string get_name(method m)
+{
+	switch(m) {
+	case method::bubblesort:
+		return "bubble sort";
+	case method::std_sort:
+		return "std::sort";
+	case method::std_stable_sort:
+		return "std::stable_sort";
+	case method::heapsort:
+		return "heapsort";
+	case method::quicksort:
+		return "quicksort";
+	case method::mergesort:
+		return "mergesort";
+	case method::insertionsort:
+		return "insertion sort";
+	case method::bitonicsort:
+		return "bitonic sort";
+	case method::halfsort:
+		return "half sort";
+	case method::merge2sort:
+		return "merge (variant)";
+	case method::permute:
+		return "permutations";
+	case method::shuffle:
+		return "shuffles";
+	}
+}
+
+unsigned int parallel_limit()
+{
+	return -1;
+	auto lim = std::thread::hardware_concurrency() - 1;
+	if(lim == 0) {
+		return (1 << 3) - 1;
+	}
+	return lim;
+}
+
+method get_current_method();
+
 namespace central {
 
-	std::thread sort_thread;
-	std::atomic_bool sort_finish_request = false;
-	std::atomic_bool sort_finished = false;
+	static randutils::mt19937_rng rng;
 
-	namespace thread {
+	std::thread sort_thread;
+	std::atomic<bool> sort_finish_request = false;
+	std::atomic<bool> sort_finished = false;
+	std::atomic<bool> shuffling = false;
+
+	std::atomic<int> assign_count = 0;
+	std::atomic<int> compare_count = 0;
+
+	void reset_counters()
+	{
+		assign_count = 0;
+		compare_count = 0;
+	}
+
+	sf::Font proggy_clean;
+	sf::Text header;
+
+	namespace thread { // {{{
 
 		// set when running
 		// reset at end of render frame
-		std::atomic_bool sort_run = false;
-		std::atomic_bool render_run = false;
+		std::atomic<bool> sort_run = false;
+		std::atomic<bool> render_run = false;
 
 		// signal for the other thread to run
-		std::condition_variable cv;
+		std::condition_variable sort_cv;
+		std::condition_variable main_cv;
 
 		struct element { // {{{
 			// we are assuming that values in the list are never destructed, only swapped (or moved)
@@ -64,6 +141,8 @@ namespace central {
 					value = other.value;
 					this->hi_mode = 1;
 					other.hi_mode = 1;
+
+					++assign_count;
 				};
 
 				bool is_important = !is_temp(this);
@@ -80,6 +159,8 @@ namespace central {
 					swap(lhs.value, rhs.value);
 					lhs.hi_mode = 1;
 					rhs.hi_mode = 1;
+
+					++assign_count;
 				};
 
 				bool is_important = !is_temp(&lhs) || !is_temp(&rhs);
@@ -95,6 +176,8 @@ namespace central {
 					out = lhs.value < rhs.value;
 					lhs.hi_mode = 2;
 					rhs.hi_mode = 2;
+
+					++compare_count;
 				};
 
 				bool is_important = false; // !is_temp(&lhs) || !is_temp(&rhs);
@@ -124,7 +207,7 @@ namespace central {
 				return !(lhs < rhs);
 			}
 
-		};
+		}; // }}}
 
 		std::vector<element> data;
 		std::mutex data_lock;
@@ -139,7 +222,7 @@ namespace central {
 			std::unique_lock<std::mutex> lock(data_lock);
 
 			if(lockstep) {
-				cv.wait(lock, [] { return sort_run.load(); });
+				sort_cv.wait(lock, [] { return sort_run.load(); });
 				sort_run = false;
 			}
 
@@ -148,7 +231,7 @@ namespace central {
 			if(lockstep) {
 				render_run = true;
 				lock.unlock();
-				cv.notify_one();
+				main_cv.notify_one();
 			}
 		}
 
@@ -162,8 +245,6 @@ namespace central {
 
 		void data_init()
 		{
-			static randutils::mt19937_rng rng;
-
 			// data array
 			std::vector<int> values(data_size);
 			std::iota(values.begin(), values.end(), 2);
@@ -175,7 +256,6 @@ namespace central {
 			data.reserve(data_size);
 
 			for(int i = 0; i < data_size; ++i) {
-				int value = i; // edit for various generators
 				data.emplace_back(values[i]);
 			}
 		}
@@ -184,9 +264,22 @@ namespace central {
 		{
 			try {
 				// run thread
+				data_init();
+				bool direction = false;
 				while(1) {
-					data_init();
 					sort_algo(data.begin(), data.end());
+					reset_counters();
+					shuffling = true;
+
+					if(direction) {
+						std::shuffle(data.begin(), data.end(), rng.engine());
+					} else {
+						std::shuffle(data.rbegin(), data.rend(), rng.engine());
+					}
+					direction = !direction;
+
+					reset_counters();
+					shuffling = false;
 				}
 			} catch(const std::exception& e) {
 				std::clog << "uncaught exception: " << typeid(e).name() << '\n'
@@ -198,7 +291,7 @@ namespace central {
 			sort_finished = true;
 		}
 
-	}
+	} // }}}
 
 	double counter = 0; // for scroll-up effect at the end
 
@@ -207,12 +300,12 @@ namespace central {
 		if(!sort_finished.load()) {
 			{ // signal sorting thread to run
 				thread::sort_run = true;
-				thread::cv.notify_one();
+				thread::sort_cv.notify_one();
 			}
 
 			{ // wait for worker
 				std::unique_lock<std::mutex> lock(thread::data_lock);
-				thread::cv.wait(lock, [] { return thread::render_run.load(); });
+				thread::main_cv.wait(lock, [] { return thread::render_run.load(); });
 				thread::render_run = false;
 			}
 		}
@@ -220,14 +313,14 @@ namespace central {
 		stdwin->clear(sf::Color::Black);
 
 		sf::RectangleShape rect;
-		rect.setOrigin(static_cast<float>(0), static_cast<float>(stdwin.winsize.y - 30));
+		rect.setOrigin(static_cast<float>(0), static_cast<float>(stdwin.winsize.y));
 		rect.setScale(1, -1);
 
 		rect.setPosition(0, 0);
-		double height_step = (stdwin.winsize.y - 60) / double(data_max);
+		double height_step = (stdwin.winsize.y - 30) / double(data_max);
 		double width_step = stdwin.winsize.x / double(data_size);
 		double width = width_step - 0;
-		rect.setSize(sf::Vector2f(std::max(width, 1.0), 1));
+		// rect.setSize(sf::Vector2f(std::max(width, 1.0), 1));
 
 		{
 			std::lock_guard<std::mutex> lock(thread::data_lock);
@@ -243,8 +336,8 @@ namespace central {
 			int i = counter;
 
 			for(auto& elem : thread::data) {
-				// rect.setSize(sf::Vector2f(static_cast<float>(width), static_cast<float>(elem.value * height_step)));
-				rect.setPosition(rect.getPosition().x, -elem.value * height_step);
+				rect.setSize(sf::Vector2f(static_cast<float>(width), static_cast<float>(elem.value * height_step)));
+				// rect.setPosition(rect.getPosition().x, -elem.value * height_step);
 				auto color = sf::Color::White;
 
 				if(elem.hi_mode) {
@@ -262,21 +355,35 @@ namespace central {
 			}
 		}
 
+		std::string head = (shuffling ? "shuffling..." : get_name(get_current_method())) + " - " + std::to_string(assign_count) + " assignments, " + std::to_string(compare_count) + " comparisons";
+
+		header.setString(head.c_str());
+		stdwin->draw(header);
+
 		stdwin->display();
 	}
 
 	void var_init()
 	{
+		if(!proggy_clean.loadFromMemory(res_proggyclean_ttf, sizeof(res_proggyclean_ttf))) {
+			rt::exit(1);
+		}
+		header.setFont(proggy_clean);
+		header.setFillColor(sf::Color::White);
+		header.setCharacterSize(16);
+
 		sort_thread = std::thread(thread::initial);
 	}
 
 	void var_clean()
 	{
-		// make sort thread continue running
-		thread::sort_run = true;
-		thread::cv.notify_one();
-
 		sort_finish_request = true;
+
+		// make sort threads continue running
+		while(!sort_finished && sort_thread.joinable()) {
+			thread::sort_run = true;
+			thread::sort_cv.notify_one();
+		}
 
 		if(sort_thread.joinable()) {
 			sort_thread.join();
@@ -285,67 +392,86 @@ namespace central {
 
 } // namespace central
 
-namespace salgo {
+namespace salgo { // {{{
 
 	template <typename Iter>
-	void bitonic_compare(bool up, Iter first, Iter last)
+	void bitonicmerge(Iter first, Iter last, bool dir, int depth = 0)
 	{
-		Iter middle = first + (last - first) / 2;
+		auto dist = last - first;
+		if(dist <= 1) {
+			return;
+		}
 
-		for(auto middle = first + (last - first) / 2;
-		    middle != last;
-		    ++first, ++middle) {
-			if((*middle < *first) == up) {
-				std::iter_swap(first, middle);
+		decltype(dist) m = 1;
+
+		// largest multiple of 2 under dist
+		while(m < dist) {
+			m <<= 1;
+		}
+		m >>= 1;
+
+		Iter mid = first + m;
+
+		for(auto a = first, b = mid; b != last; ++a, ++b) {
+			if((*b < *a) == dir) {
+				std::iter_swap(a, b);
 			}
 		}
+
+		if((1 << depth) < parallel_limit()) {
+			auto task = std::async(std::launch::async, bitonicmerge<Iter>, first, mid, dir, depth + 1);
+			bitonicmerge(mid, last, dir, depth + 1);
+			task.wait();
+		} else {
+			bitonicmerge(first, mid, dir, depth + 1);
+			bitonicmerge(mid, last, dir, depth + 1);
+		}
 	}
 
 	template <typename Iter>
-	void bitonic_merge(bool up, Iter first, Iter last)
+	void bitonicsort(Iter first, Iter last, bool dir = true, int depth = 0)
 	{
-		if(last - first <= 1) {
+		auto dist = last - first;
+		if(dist <= 1) {
 			return;
 		}
+		auto mid = first + (dist / 2);
 
-		bitonic_compare(up, first, last);
-
-		Iter middle = first + (last - first) / 2;
-
-		bitonic_merge(up, first, middle);
-		bitonic_merge(up, middle, last);
-	}
-
-	template <typename Iter>
-	void bitonic_sort(bool up, Iter first, Iter last)
-	{
-		if(last - first <= 1) {
-			return;
+		if((1 << depth) < parallel_limit()) {
+			auto task = std::async(std::launch::async, bitonicsort<Iter>, first, mid, !dir, depth + 1);
+			bitonicsort(mid, last, dir, depth + 1);
+			task.wait();
+		} else {
+			bitonicsort(first, mid, !dir, depth + 1);
+			bitonicsort(mid, last, dir, depth + 1);
 		}
 
-		Iter middle = first + (last - first) / 2;
-
-		bitonic_sort(true, first, middle);
-		bitonic_sort(false, middle, last);
-
-		bitonic_merge(up, first, last);
+		bitonicmerge(first, last, dir, depth);
 	}
 
 	template<class Iter>
-	void mergesort(Iter first, Iter last)
+	void mergesort(Iter first, Iter last, int depth = 0)
 	{
-		if (last - first > 1) {
-			Iter middle = first + (last - first) / 2;
-
-			mergesort(first, middle);
-			mergesort(middle, last);
-
-			std::inplace_merge(first, middle, last);
+		auto dist = last - first;
+		if(dist <= 1) {
+			return;
 		}
+		Iter middle = first + dist / 2;
+
+		if((1 << depth) < parallel_limit()) {
+			auto task = std::async(std::launch::async, mergesort<Iter>, first, middle, depth + 1);
+			mergesort(middle, last, depth + 1);
+			task.wait();
+		} else {
+			mergesort(first, middle, depth + 1);
+			mergesort(middle, last, depth + 1);
+		}
+
+		std::inplace_merge(first, middle, last);
 	}
 
 	template <typename Iter>
-	void quicksort(Iter first, Iter last)
+	void quicksort(Iter first, Iter last, int depth = 0)
 	{
 		if(first == last) {
 			return;
@@ -356,8 +482,14 @@ namespace salgo {
 		auto partpoint = std::partition(first, pivot_point, [&](const auto& e) { return e <= pivot; });
 		std::iter_swap(pivot_point, partpoint);
 
-		quicksort(first, partpoint);
-		quicksort(partpoint + 1, last);
+		if((1 << depth) < parallel_limit()) {
+			auto task = std::async(std::launch::async, quicksort<Iter>, first, partpoint, depth + 1);
+			quicksort(partpoint + 1, last, depth + 1);
+			task.wait();
+		} else {
+			quicksort(first, partpoint, depth + 1);
+			quicksort(partpoint + 1, last, depth + 1);
+		}
 	}
 
 	template <typename Iter>
@@ -388,23 +520,69 @@ namespace salgo {
 		}
 	}
 
-}
+	template <typename Iter>
+	void halfsort(Iter first, Iter last, int depth = 0)
+	{
+		auto dist = last - first;
+		if(dist > 1) {
+			auto mid = first + dist / 2;
+			std::nth_element(first, mid, last);
 
-enum class method {
-	bubblesort,
-	std_sort,
-	std_stable_sort,
-	heapsort,
-	quicksort,
-	mergesort,
-	insertionsort,
-	bitonicsort
-} algo_method = method::std_stable_sort;
+			if((1 << depth) < parallel_limit()) {
+				auto task = std::async(std::launch::async, halfsort<Iter>, first, mid, depth + 1);
+				halfsort(mid, last, depth + 1);
+				task.wait();
+			} else {
+				halfsort(first, mid, depth + 1);
+				halfsort(mid, last, depth + 1);
+			}
+		}
+	}
+
+	template <typename Iter>
+	void merge2sort(Iter first, Iter last)
+	{
+		size_t step = 1;
+		while(step < last - first) {
+			auto left = first, mid = first + step;
+			while(mid < last) {
+				auto right = (last - mid > step) ? mid + step : last;
+
+				std::inplace_merge(left, mid, right);
+
+				left = right;
+				if(last - right > step) {
+					mid = right + step;
+				} else {
+					break;
+				}
+			}
+
+			step <<= 1;
+		}
+	}
+
+} // }}}
+
+static constexpr method selected_sorts[] = {
+	method::std_sort,
+	method::std_stable_sort,
+	method::heapsort,
+	method::quicksort,
+	method::mergesort,
+	method::bitonicsort
+	};
+int algo_method = 0;
+
+method get_current_method()
+{
+	return selected_sorts[algo_method];
+}
 
 template <typename Iter>
 void sort_algo(Iter first, Iter last)
 {
-	switch(algo_method) {
+	switch(get_current_method()) {
 	case method::bubblesort:
 		salgo::bubblesort(first, last);
 		break;
@@ -428,9 +606,28 @@ void sort_algo(Iter first, Iter last)
 		salgo::insertionsort(first, last);
 		break;
 	case method::bitonicsort:
-		salgo::bitonic_sort(true, first, last);
+		salgo::bitonicsort(first, last);
+		break;
+	case method::halfsort:
+		salgo::halfsort(first, last);
+		break;
+	case method::merge2sort:
+		salgo::merge2sort(first, last);
+		break;
+	case method::permute:
+		std::sort(first, last);
+		while(1) {
+			std::next_permutation(first, last);
+		}
+		break;
+	case method::shuffle:
+		while(1) {
+			std::shuffle(first, last, central::rng.engine());
+		}
 		break;
 	}
+
+	algo_method = (algo_method + 1) % (sizeof(selected_sorts) / sizeof(selected_sorts[0]));
 }
 
 void initial()
