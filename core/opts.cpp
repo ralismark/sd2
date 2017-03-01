@@ -13,6 +13,10 @@ namespace rt {
 
 	namespace opt {
 
+		stx::optional<std::string> a;
+		stx::optional<std::string> b;
+		stx::optional<std::string> c;
+
 		stx::optional<int> wfps = 30;
 		int wstyle = sf::Style::Titlebar | sf::Style::Close;
 		vec2i wsize{1024, 600};
@@ -30,12 +34,18 @@ namespace rt {
 R"({0} - standard window
 
 Usage: {0} [options...]
+    -a[=VALUE]          Program defined
+    -b[=VALUE]          Program defined
+    -c[=VALUE]          Program defined
     -f, --fps[=LIMIT]   Specify the framerate limit, or have no limit
     -w, --style[=STYLE] Specify the window style. A conbination of 't'
                         (titlebar), 'c' (close), 'r' (resize), and
                         'f' (fullscreen, not permitted with others).
     -s, --size=X,Y      Set the width (X) and height (Y) of the window.
     -h, --help          Display this message and exit.
+
+The program defied option are parsed, but their behaviour depends on the
+program using this runtime, or may be ignored.
 )";
 
 			const char* err = "{}: {}: {}\n";
@@ -65,10 +75,19 @@ Usage: {0} [options...]
 
 			int opt_index;
 			int opt;
-			while((opt = getopt_long(argc, argv, "hf::w::s:", long_opts, &opt_index)) != -1) {
+			while((opt = getopt_long(argc, argv, "hf::w::s:a::b::c::", long_opts, &opt_index)) != -1) {
 				std::string arg = optarg ? optarg : "";
 
 				switch(opt) {
+				case 'a':
+					a = optarg ? optarg : "";
+					break;
+				case 'b':
+					b = optarg ? optarg : "";
+					break;
+				case 'c':
+					c = optarg ? optarg : "";
+					break;
 				case 'h':
 					fmt::print(help, argv[0]);
 					return parse_help;
