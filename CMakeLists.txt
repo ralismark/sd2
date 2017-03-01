@@ -59,5 +59,9 @@ add_subdirectory(export)
 
 add_executable(evtest evtest.cpp)
 add_executable(all_check all.cpp)
+
 add_executable(sort sort.cpp)
+target_link_libraries(sort -subsystem:windows -entry:mainCRTStartup)
+
 add_executable(stars stars.cpp)
+target_link_libraries(stars -subsystem:windows -entry:mainCRTStartup)
