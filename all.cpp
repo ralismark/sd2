@@ -34,6 +34,8 @@
 #include "input/keystate.cpp"
 
 #include "res/except.hpp"
+#include "res/memfile.hpp"
+#include "res/memblk.hpp"
 #include "res/resource.hpp"
 
 // re-include everything
