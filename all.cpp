@@ -12,9 +12,10 @@
 // all includes
 
 #include "core/event.hpp"
-#include "core/runtime.cpp"
+#include "core/opts.hpp"
+#include "core/runtime.hpp"
 
-#include "disp/window.cpp"
+#include "disp/window.hpp"
 
 #include "export/dllport.hpp"
 // #include "export/resource.cpp" // this is independent from the rest
@@ -30,8 +31,8 @@
 #include "include/vector.hpp"
 #include "include/win32.hpp"
 
-#include "input/button.cpp"
-#include "input/keystate.cpp"
+#include "input/button.hpp"
+#include "input/keystate.hpp"
 
 #include "res/except.hpp"
 #include "res/memfile.hpp"
