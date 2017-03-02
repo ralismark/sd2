@@ -20,9 +20,12 @@ namespace res {
 	class ro_memblk
 	{
 	private: // variables
+
 		const void* address;
 		uint64_t blk_size;
+
 	public: // methods
+
 		ro_memblk()
 			: address(nullptr), blk_size(0)
 		{
@@ -76,6 +79,7 @@ namespace res {
 		{
 			return blk_size;
 		}
+
 	};
 
 } // namespace res
