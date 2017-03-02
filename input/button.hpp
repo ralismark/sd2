@@ -20,12 +20,17 @@
 class button
 {
 public: // statics
+
 	using dimension_type = int;
 	using vector_type = vector<int, 2>;
+
 public: // variables
+
 	sf::Rect<dimension_type> bound;
 	bool active;
+
 public: // methods
+
 	button()
 		: bound()
 		, active(false)
@@ -64,6 +69,7 @@ public: // methods
 class switchboard
 {
 public: // statics
+
 	using id_type = int;
 
 	/*
@@ -136,7 +142,6 @@ private: // variables
 
 	std::map<id_type, binfo> buttons;
 
-public: // variables
 public: // statics
 
 	// {{{ interface

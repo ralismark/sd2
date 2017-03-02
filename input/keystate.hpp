@@ -16,10 +16,15 @@
 class keystate
 {
 public: // statics
+
 	using key_type = sf::Keyboard::Key;
+
 private: // variables
+
 	key_type key;
+
 public: // methods
+
 	keystate(key_type kcode = key_type::Unknown)
 		: key(kcode)
 	{
@@ -44,4 +49,5 @@ public: // methods
 	{
 		return !this->pressed();
 	}
+
 };

@@ -21,12 +21,15 @@ namespace res {
 	class ro_memfile
 	{
 	private: // variables
+
 		HANDLE file;
 		HANDLE mapping;
 
 		void* view;
 		uint64_t file_size;
+
 	public: // methods
+
 		ro_memfile()
 			: file(nullptr), mapping(nullptr), view(nullptr), file_size(0)
 		{
@@ -144,6 +147,7 @@ namespace res {
 		{
 			return file_size;
 		}
+
 	};
 
 } // namespace res

@@ -23,7 +23,6 @@
  */
 class event_iterator
 {
-public: // statics
 private: // variables
 
 	stdwindow* owner;
@@ -109,4 +108,5 @@ public: // methods
 	{
 		return {};
 	}
+
 };

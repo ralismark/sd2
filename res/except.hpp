@@ -18,6 +18,7 @@ namespace res {
 		: public std::invalid_argument
 	{
 	public:
+
 		using std::invalid_argument::invalid_argument;
 
 		invalid_key()
@@ -26,6 +27,7 @@ namespace res {
 		}
 
 		virtual ~invalid_key() = default;
+
 	};
 
 	/**
@@ -41,6 +43,7 @@ namespace res {
 		: public std::runtime_error
 	{
 	public:
+
 		using std::runtime_error::runtime_error;
 
 		unavailable()
@@ -49,6 +52,7 @@ namespace res {
 		}
 
 		virtual ~unavailable() = default;
+
 	};
 
 } // namespace res
