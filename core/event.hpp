@@ -1,6 +1,15 @@
 /* -*- cpp.doxygen -*- */
 #pragma once
 
+/**
+ * \file
+ * \brief SFML Window event loop helpers
+ *
+ * This file provides the event_queue and event_iterator classes, which provide
+ * a simpler interface for the event loop. Additionally, it allows the use of
+ * range-for loops to loop over pending events.
+ */
+
 #include <sfml/window.hpp>
 #include "disp/window.hpp"
 
