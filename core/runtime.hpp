@@ -33,13 +33,21 @@ namespace rt {
 		 * \brief message to exit the program
 		 *
 		 * Do not use this class explicitly; instead use exit() to
-		 * cause an exit.
+		 * cause an exit. Alternatively, this can be used as an
+		 * exception to unwind the stack (e.g. for exiting a thread).
 		 */
 		struct exit_signaller
 		{
 			int exit_code; ///< passed exit code
 		};
 
+		/**
+		 * \struct skipframe_signaller
+		 * \brief message to skip to next frame
+		 *
+		 * Similar to exit_signaller, do not throw this explicitly, but
+		 * use skipframe() instead.
+		 */
 		struct skipframe_signaller
 		{
 		};
@@ -148,6 +156,13 @@ namespace rt {
  */
 void initial();
 
+/**
+ * \fn main
+ * \brief main program
+ *
+ * This is defined by the runtime, and sets up several of its components. It
+ * also handles the event loop, as well as frame events.
+ */
 int main(int argc, char** argv) try
 {
 	rt::argc = argc;

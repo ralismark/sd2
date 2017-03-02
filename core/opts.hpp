@@ -13,6 +13,15 @@ namespace rt {
 
 	namespace opt {
 
+		/**
+		 * \var a
+		 * \var b
+		 * \var c
+		 * \brief programmer-defined options
+		 *
+		 * These options allow the programmer to handle extra options
+		 * specific to their program. Their use depends on the program.
+		 */
 		stx::optional<std::string> a;
 		stx::optional<std::string> b;
 		stx::optional<std::string> c;
@@ -28,6 +37,13 @@ namespace rt {
 			parse_fail
 		};
 
+		/**
+		 * \fn parse
+		 * \brief parse arguments
+		 *
+		 * This is a large function wrapping getopt, and handles the
+		 * parsing and setting of all available options.
+		 */
 		opt_result parse(int argc, char** argv)
 		{
 			const char* help =
@@ -159,6 +175,6 @@ program using this runtime, or may be ignored.
 			return parse_success;
 		}
 
-	}
+	} // namespace opt
 
 } // namespace rt
