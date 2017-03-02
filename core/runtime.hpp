@@ -8,10 +8,10 @@
 #include <iostream>
 #include <typeinfo>
 
-#include "disp/window.cpp"
+#include "disp/window.hpp"
 #include "core/event.hpp"
 #include "include/sigslots.hpp"
-#include "core/opts.cpp"
+#include "core/opts.hpp"
 
 /**
  * \namespace rt

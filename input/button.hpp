@@ -7,7 +7,7 @@
 
 #include "include/sigslots.hpp"
 #include "include/vector.hpp"
-#include "disp/window.cpp"
+#include "disp/window.hpp"
 
 /**
  * \class button
