@@ -23,6 +23,8 @@
  */
 class event_iterator
 {
+public: // statics
+	using value_type = const sf::Event&;
 private: // variables
 
 	stdwindow* owner;
@@ -41,12 +43,7 @@ public: // methods
 		++*this; // get first element
 	}
 
-	const sf::Event& operator*() const&
-	{
-		return event;
-	}
-
-	sf::Event operator*() const&&
+	const value_type& operator*() const
 	{
 		return event;
 	}
