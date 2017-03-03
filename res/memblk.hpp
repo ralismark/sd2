@@ -26,16 +26,8 @@ namespace res {
 
 	public: // methods
 
-		ro_memblk()
-			: address(nullptr), blk_size(0)
-		{
-		}
-
-		ro_memblk(const void* addr_init, uint64_t size_init)
-			: ro_memblk()
-		{
-			this->open(addr_init, size_init);
-		}
+		ro_memblk();
+		ro_memblk(const void* addr_init, uint64_t size_init);
 
 		template <uint64_t N>
 		ro_memblk(byte_block<N>& block)
@@ -44,11 +36,7 @@ namespace res {
 			this->open(block);
 		}
 
-		void open(const void* addr_init, uint64_t size_init)
-		{
-			address = addr_init;
-			blk_size = size_init;
-		}
+		void open(const void* addr_init, uint64_t size_init);
 
 		template <uint64_t N>
 		void open(byte_block<N>& block)
@@ -56,29 +44,11 @@ namespace res {
 			this->open(static_cast<const void*>(&block[0]), N);
 		}
 
-		bool is_open() const
-		{
-			return address != nullptr;
-		}
+		bool is_open() const;
+		void close();
 
-		void close()
-		{
-			address = nullptr;
-			blk_size = 0;
-		}
-
-		const void* get() const
-		{
-			if(!this->is_open()) {
-				throw res::unavailable("resource not loaded");
-			}
-			return address;
-		}
-
-		uint64_t size() const
-		{
-			return blk_size;
-		}
+		const void* get() const;
+		uint64_t size() const;
 
 	};
 

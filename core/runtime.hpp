@@ -67,10 +67,7 @@ namespace rt {
 	void exit(
 	          int code = 0 ///< [in] intended exit code, defaulting to 0
 	         )
-		noexcept(false)
-	{
-		throw detail::exit_signaller{code};
-	}
+		noexcept(false);
 
 	/**
 	 * \fn skipframe
@@ -80,10 +77,7 @@ namespace rt {
 	 * the next frame. This skips incrementing the frame counter.
 	 */
 	void skipframe()
-		noexcept(false)
-	{
-		throw detail::skipframe_signaller{};
-	}
+		noexcept(false);
 
 	/**
 	 * \var on_cleanup
@@ -93,7 +87,7 @@ namespace rt {
 	 * is about to exit. Exit signals (from rt::exit) are not permitted
 	 * here.
 	 */
-	signal<> on_cleanup;
+	extern signal<> on_cleanup;
 
 	/**
 	 * \var on_win_event
@@ -106,7 +100,7 @@ namespace rt {
 	 * Note that the window close event has an extra special handler which
 	 * is always triggered after all user-defined events.
 	 */
-	signal<const sf::Event&> on_win_event;
+	extern signal<const sf::Event&> on_win_event;
 
 	/**
 	 * \var on_frame
@@ -116,7 +110,7 @@ namespace rt {
 	 * Priorities should be used when adding slots to enforce the execution
 	 * order.
 	 */
-	signal<> on_frame;
+	extern signal<> on_frame;
 
 	/**
 	 * \var frame
@@ -125,7 +119,7 @@ namespace rt {
 	 * This indicated the number of frames that have elapsed since the
 	 * beginning of the program.
 	 */
-	unsigned long long frame;
+	extern unsigned long long frame;
 
 	/**
 	 * \var argc
@@ -140,9 +134,9 @@ namespace rt {
 	 *
 	 * pgname is set to argv[0] - the name of the program.
 	 */
-	int argc;
-	char** argv;
-	char* pgname;
+	extern int argc;
+	extern char** argv;
+	extern char* pgname;
 
 } // namespace rt
 
@@ -163,68 +157,4 @@ void initial();
  * This is defined by the runtime, and sets up several of its components. It
  * also handles the event loop, as well as frame events.
  */
-int main(int argc, char** argv) try
-{
-	rt::argc = argc;
-	rt::argv = argv;
-	rt::pgname = argv[0];
-
-	auto opt_parse_result = rt::opt::parse(argc, argv);
-	if(opt_parse_result == rt::opt::parse_help) {
-		return 0;
-	} else if(opt_parse_result == rt::opt::parse_fail) {
-		return 1;
-	}
-
-	stdwindow::winstyle = rt::opt::wstyle;
-	stdwindow::winfps = rt::opt::wfps.value_or(0);
-	stdwindow::winsize = rt::opt::wsize;
-
-	int exit_code = 0;
-	try {
-		initial();
-		if(!stdwin) {
-			stdwin.init();
-		}
-
-		while(stdwin) {
-			try {
-				// event loop, see event.hpp for details on event_queue
-				for(auto&& event : event_queue(stdwin)) {
-					rt::on_win_event(event);
-
-					// always close and exit
-					if(event.type == sf::Event::Closed) {
-						if(stdwin) {
-							stdwin->close();
-						}
-						rt::exit(0);
-					}
-				}
-				rt::on_frame();
-
-				++rt::frame;
-			} catch(const rt::detail::skipframe_signaller& e) {
-				(void)(e);
-				// go to next frame
-			}
-		}
-	} catch(const rt::detail::exit_signaller& e) {
-		// storing the exit code allows cleanup even
-		// when exiting
-		exit_code = e.exit_code;
-	}
-
-	try {
-		rt::on_cleanup();
-	} catch(const rt::detail::exit_signaller& e) {
-		exit_code = e.exit_code;
-	}
-
-	return exit_code;
-} catch(const std::exception& e) {
-	std::cerr << "\nuncaught exception: " << typeid(e).name() << '\n'
-		<< "    .what(): " << e.what() << '\n';
-} catch(...) {
-	std::cerr << "\nuncaught exception!\n";
-}
+int main(int argc, char** argv);

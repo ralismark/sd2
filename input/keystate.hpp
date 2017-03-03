@@ -25,29 +25,11 @@ private: // variables
 
 public: // methods
 
-	keystate(key_type kcode = key_type::Unknown)
-		: key(kcode)
-	{
-	}
+	keystate(key_type kcode = key_type::Unknown);
+	void rebind(key_type kcode = key_type::Unknown);
 
-	void rebind(key_type kcode = key_type::Unknown)
-	{
-		key = kcode;
-	}
-
-	bool pressed() const
-	{
-		return sf::Keyboard::isKeyPressed(key);
-	}
-
-	explicit operator bool() const
-	{
-		return this->pressed();
-	}
-
-	bool operator!() const
-	{
-		return !this->pressed();
-	}
+	bool pressed() const;
+	explicit operator bool() const;
+	bool operator!() const;
 
 };
