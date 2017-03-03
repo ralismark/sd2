@@ -32,83 +32,33 @@ public: // statics
 
 private: // internal statics
 
-	static window_type& get_win()
-	{
-		static window_type win;
-		return win;
-	}
+	static window_type& get_win();
 
 public: // methods
 
 	// base accessors
 	// go through here, so he are not as affected if we change the window handling
 
-	window_type& window()
-	{
-		return get_win();
-	}
-
-	const window_type& window() const
-	{
-		return get_win();
-	}
+	window_type& window();
+	const window_type& window() const;
 
 	// helpers
 
-	void init()
-	{
-		this->window().create(sf::VideoMode(winsize.x, winsize.y), winname, winstyle);
-		if(winfps > 0) {
-			this->window().setFramerateLimit(winfps);
-		}
-	}
+	void init();
 
-	explicit operator bool() const
-	{
-		return this->window().isOpen();
-	}
-
-	bool operator!() const
-	{
-		return !bool(*this);
-	}
+	explicit operator bool() const;
+	bool operator!() const;
 
 	// direct access
 
-	window_type* operator->()
-	{
-		return &this->window();
-	}
+	window_type* operator->();
+	window_type& operator*();
+	operator window_type&();
 
-	window_type& operator*()
-	{
-		return this->window();
-	}
-
-	operator window_type&()
-	{
-		return this->window();
-	}
-
-	const window_type* operator->() const
-	{
-		return &this->window();
-	}
-
-	const window_type& operator*() const
-	{
-		return this->window();
-	}
-
-	operator const window_type&() const
-	{
-		return this->window();
-	}
+	const window_type* operator->() const;
+	const window_type& operator*() const;
+	operator const window_type&() const;
 
 };
 
-int stdwindow::winstyle;
-int stdwindow::winfps;
-vec2i stdwindow::winsize;
-
-stdwindow stdwin;
+extern stdwindow stdwin;

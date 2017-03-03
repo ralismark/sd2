@@ -21,11 +21,7 @@ namespace res {
 
 		using std::invalid_argument::invalid_argument;
 
-		invalid_key()
-			: std::invalid_argument("Invalid key when loading resource")
-		{
-		}
-
+		invalid_key();
 		virtual ~invalid_key() = default;
 
 	};
@@ -46,11 +42,7 @@ namespace res {
 
 		using std::runtime_error::runtime_error;
 
-		unavailable()
-			: std::runtime_error("Resource unavailable")
-		{
-		}
-
+		unavailable();
 		virtual ~unavailable() = default;
 
 	};
