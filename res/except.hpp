@@ -22,7 +22,7 @@ namespace res {
 		using std::invalid_argument::invalid_argument;
 
 		invalid_key();
-		virtual ~invalid_key() = default;
+		virtual ~invalid_key();
 
 	};
 
@@ -43,7 +43,7 @@ namespace res {
 		using std::runtime_error::runtime_error;
 
 		unavailable();
-		virtual ~unavailable() = default;
+		virtual ~unavailable();
 
 	};
 

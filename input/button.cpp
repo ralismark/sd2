@@ -1,5 +1,7 @@
 #include "button.hpp"
 
+#include "disp/window.hpp"
+
 // class button {{{
 
 button::button()
@@ -20,7 +22,7 @@ button::button(const sf::Rect<dimension_type>& init_bound)
 {
 }
 
-bool button::contains(const vector_type& pos)
+bool button::contains(const vector_type& pos) const
 {
 	return bound.contains(pos.x, pos.y);
 }

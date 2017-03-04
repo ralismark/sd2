@@ -16,8 +16,8 @@ namespace res {
 	{
 	private: // variables
 
-		HANDLE file;
-		HANDLE mapping;
+		void* file;
+		void* mapping;
 
 		void* view;
 		uint64_t file_size;
