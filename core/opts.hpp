@@ -2,10 +2,7 @@
 #pragma once
 
 #include <string>
-#include <getopt.h>
-#include <sfml/window/windowstyle.hpp>
 
-#include "include/fmt.hpp"
 #include "include/optional.hpp"
 #include "include/vector.hpp"
 

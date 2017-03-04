@@ -2,7 +2,6 @@
 #pragma once
 
 #include <map>
-#include <type_traits>
 
 namespace res {
 

@@ -1,5 +1,7 @@
 #include "memblk.hpp"
 
+#include "except.hpp"
+
 namespace res {
 
 	// class ro_memblk {{{

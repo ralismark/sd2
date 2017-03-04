@@ -1,11 +1,7 @@
 /* -*- cpp.doxygen -*- */
 #pragma once
 
-#include <cassert>
-
 #include "include/types.hpp"
-
-#include "except.hpp"
 
 namespace res {
 

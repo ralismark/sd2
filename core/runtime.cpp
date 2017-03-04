@@ -1,5 +1,12 @@
 #include "runtime.hpp"
 
+#include <iostream>
+#include <typeinfo>
+
+#include "core/event.hpp"
+#include "core/opts.hpp"
+#include "disp/window.hpp"
+
 namespace rt {
 
 	void exit(int code)
