@@ -13,7 +13,7 @@ event_iterator::event_iterator(stdwindow& init)
 	++*this; // get first element
 }
 
-const value_type& event_iterator::operator*() const
+const event_iterator::value_type& event_iterator::operator*() const
 {
 	return event;
 }
@@ -52,12 +52,12 @@ event_queue::event_queue(stdwindow& init)
 {
 }
 
-event_queue::event_iterator begin()
+event_iterator event_queue::begin()
 {
 	return { *owner };
 }
 
-event_queue::event_iterator end()
+event_iterator event_queue::end()
 {
 	return {};
 }

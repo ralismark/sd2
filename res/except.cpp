@@ -9,7 +9,7 @@ namespace res {
 	{
 	}
 
-	virtual invalid_key::~invalid_key() = default;
+	invalid_key::~invalid_key() = default;
 
 	// }}}
 
@@ -20,7 +20,7 @@ namespace res {
 	{
 	}
 
-	virtual unavailable::~unavailable() = default;
+	unavailable::~unavailable() = default;
 
 	// }}}
 

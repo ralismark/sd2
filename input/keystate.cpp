@@ -17,7 +17,7 @@ bool keystate::pressed() const
 	return sf::Keyboard::isKeyPressed(key);
 }
 
-explicit keystate::operator bool() const
+keystate::operator bool() const
 {
 	return this->pressed();
 }

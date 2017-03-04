@@ -91,20 +91,22 @@ program using this runtime, or may be ignored.
 			{
 				auto split = arg.find_first_of(',');
 				if(split == std::string::npos) {
-					fmt::print(err, argv[0], arg, "invalid format");
+					fmt::print(err, pgname, arg, "invalid format");
 					return false;
 				}
-				auto x = parse_int(argv[0], arg.substr(0, split), arg);
+				auto x = parse_int(pgname, arg.substr(0, split), arg);
 				if(!x) {
 					return false;
 				}
-				auto y = parse_int(argv[0], arg.substr(split + 1), arg);
+				auto y = parse_int(pgname, arg.substr(split + 1), arg);
 				if(!y) {
 					return false;
 				}
 
 				wsize.x = *x;
 				wsize.y = *y;
+
+				return true;
 			}
 
 		} // namespace anonymous

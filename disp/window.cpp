@@ -34,7 +34,7 @@ void stdwindow::init()
 	}
 }
 
-explicit stdwindow::operator bool() const
+stdwindow::operator bool() const
 {
 	return this->window().isOpen();
 }
