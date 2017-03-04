@@ -1,16 +1,42 @@
-// this file contains all includes
-// this ensures that all files are syntactically correct
-// additionally, this ensures that all headers are correctly guarded against multiple inclusions
+/* -*- cpp.doxygen -*- */
+/**
+ * \file all.cpp
+ * \brief Include of all files
+ *
+ * This is a test file which includes all files (both header and
+ * implementation) in the project. This ensures that all are correct and
+ * tested, and that compile-time errors (e.g. syntax) are caught. Additionally,
+ * all headers are included twice to check for include guards.
+ *
+ * Note: Including the implementation may not be necessary (since we generate a
+ *       library from them), but ensures that all files are checked.
+ */
 
-#ifndef ALL_INCLUDE
-	#define ALL_INCLUDE 1
-#else
-	#undef ALL_INCLUDE
-	#define ALL_INCLUDE 2
+#ifndef EXPORTS
+	#define EXPORTS 1 // for export/resource
 #endif
 
-// all includes
+// source
+#ifdef INCLUDE_SOURCE
 
+	#include "core/event.cpp"
+	#include "core/opts.cpp"
+	#include "core/runtime.cpp"
+
+	#include "disp/window.cpp"
+
+	#include "export/resource.cpp"
+
+	#include "input/button.cpp"
+	#include "input/keystate.cpp"
+
+	#include "res/except.cpp"
+	#include "res/memblk.cpp"
+	#include "res/memfile.cpp"
+
+#endif
+
+// headers
 #include "core/event.hpp"
 #include "core/opts.hpp"
 #include "core/runtime.hpp"
@@ -18,7 +44,6 @@
 #include "disp/window.hpp"
 
 #include "export/dllport.hpp"
-// #include "export/resource.cpp" // this is independent from the rest
 #include "export/resource.hpp"
 
 #include "include/fmt.hpp"
@@ -35,15 +60,27 @@
 #include "input/keystate.hpp"
 
 #include "res/except.hpp"
-#include "res/memfile.hpp"
 #include "res/memblk.hpp"
+#include "res/memfile.hpp"
 #include "res/resource.hpp"
 
-// re-include everything
-#if ALL_INCLUDE < 2
-// first run
+// invert INCLUDE_SOURCE
+#ifdef INCLUDE_SOURCE
+	void initial()
+	{
+	}
 
-void initial() {} // required to be defined, from core/runtime
-
-#include "all.cpp"
+	#undef INCLUDE_SOURCE
+#else
+	#define INCLUDE_SOURCE 1
 #endif
+
+// logic for repeat include
+#ifndef REPEAT_RUN
+	#define REPEAT_RUN 1
+
+	#include __FILE__
+
+#endif
+
+
