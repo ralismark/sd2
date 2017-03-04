@@ -1,5 +1,10 @@
 #include "opts.hpp"
 
+#include <getopt.h>
+#include <sfml/window/windowstyle.hpp>
+
+#include "include/fmt.hpp"
+
 namespace rt {
 
 	namespace opt {

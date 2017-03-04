@@ -10,7 +10,7 @@
  * range-for loops to loop over pending events.
  */
 
-#include <sfml/window.hpp>
+#include <sfml/window/event.hpp>
 #include "disp/window.hpp"
 
 /**

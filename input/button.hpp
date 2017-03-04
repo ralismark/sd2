@@ -4,10 +4,9 @@
 #include <map>
 
 #include <sfml/graphics/rect.hpp>
+#include <sfml/window/event.hpp>
 
-#include "include/sigslots.hpp"
 #include "include/vector.hpp"
-#include "disp/window.hpp"
 
 /**
  * \class button

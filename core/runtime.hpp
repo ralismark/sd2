@@ -5,13 +5,9 @@
 #define NDEBUG 1
 #endif
 
-#include <iostream>
-#include <typeinfo>
+#include <sfml/window/event.hpp>
 
-#include "disp/window.hpp"
-#include "core/event.hpp"
 #include "include/sigslots.hpp"
-#include "core/opts.hpp"
 
 /**
  * \namespace rt

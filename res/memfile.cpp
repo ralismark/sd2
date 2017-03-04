@@ -1,5 +1,11 @@
 #include "memfile.hpp"
 
+#include <cassert>
+#include <memory>
+
+#include "except.hpp"
+#include "include/win32.hpp"
+
 namespace res {
 
 	// class ro_memfile {{{

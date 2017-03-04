@@ -1,7 +1,6 @@
 /* -*- cpp.doxygen -*- */
 #pragma once
 
-#include <utility>
 #include <sfml/window.hpp>
 #include <sfml/graphics/renderwindow.hpp>
 

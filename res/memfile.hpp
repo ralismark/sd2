@@ -1,14 +1,8 @@
 /* -*- cpp.doxygen -*- */
 #pragma once
 
-#include <cassert>
 #include <cstdint>
-#include <memory>
 #include <system_error>
-
-#include "include/win32.hpp"
-
-#include "except.hpp"
 
 namespace res {
 
