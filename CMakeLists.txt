@@ -52,17 +52,33 @@ configure_file(
 )
 include_directories("${PROJECT_BINARY_DIR}/h")
 
-# source
+# headers
 include_directories("${PROJECT_SOURCE_DIR}")
 
+# libraries
+add_subdirectory(core)
+add_subdirectory(disp)
+add_subdirectory(input)
+add_subdirectory(res)
 add_subdirectory(export)
 
+# runtime
+
+add_library(runtime INTERFACE)
+target_link_libraries(runtime INTERFACE core disp input res)
+
+# source
+
 add_executable(evtest evtest.cpp)
+target_link_libraries(evtest runtime)
+
 add_executable(all_check all.cpp)
 
 add_executable(sort sort.cpp)
 target_link_libraries(sort -subsystem:windows -entry:mainCRTStartup)
 target_link_libraries(sort resource)
+target_link_libraries(sort runtime)
 
 add_executable(stars stars.cpp)
 target_link_libraries(stars -subsystem:windows -entry:mainCRTStartup)
+target_link_libraries(stars runtime)

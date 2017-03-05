@@ -1,114 +1,81 @@
-/* -*- cpp.doxygen -*- */
-#pragma once
+#include "window.hpp"
 
-#include <utility>
-#include <sfml/window.hpp>
-#include <sfml/graphics/renderwindow.hpp>
+// class stdwindow {{{
 
-#include "include/vector.hpp"
+int stdwindow::winstyle{};
+int stdwindow::winfps{};
+vec2i stdwindow::winsize{};
 
-/**
- * \class stdwindow
- * \brief sfml window singleton
- *
- * Since most programs only need one window, this class is provided to provide
- * a way to access and control it. Generally, it acts as a `pointer', using the
- * dereference operators to access the underlying singleton.
- *
- * The configuration of the window is done using macros. See config.hpp for
- * defaults, as well as the format of certain options.
- */
-class stdwindow
+stdwindow::window_type& stdwindow::get_win()
 {
-public: // statics
+	static window_type win;
+	return win;
+}
 
-	using window_type = sf::RenderWindow;
+// base accessors
 
-	// confix
-	static constexpr auto winname = "Standard window";
-	static int winstyle;
-	static int winfps;
-	static vec2i winsize;
+stdwindow::window_type& stdwindow::window()
+{
+	return get_win();
+}
 
-private: // internal statics
+const stdwindow::window_type& stdwindow::window() const
+{
+	return get_win();
+}
 
-	static window_type& get_win()
-	{
-		static window_type win;
-		return win;
+// helpers
+
+void stdwindow::init()
+{
+	this->window().create(sf::VideoMode(winsize.x, winsize.y), winname, winstyle);
+	if(winfps > 0) {
+		this->window().setFramerateLimit(winfps);
 	}
+}
 
-public: // methods
+stdwindow::operator bool() const
+{
+	return this->window().isOpen();
+}
 
-	// base accessors
-	// go through here, so he are not as affected if we change the window handling
+bool stdwindow::operator!() const
+{
+	return !bool(*this);
+}
 
-	window_type& window()
-	{
-		return get_win();
-	}
+// direct access
 
-	const window_type& window() const
-	{
-		return get_win();
-	}
+stdwindow::window_type* stdwindow::operator->()
+{
+	return &this->window();
+}
 
-	// helpers
+stdwindow::window_type& stdwindow::operator*()
+{
+	return this->window();
+}
 
-	void init()
-	{
-		this->window().create(sf::VideoMode(winsize.x, winsize.y), winname, winstyle);
-		if(winfps > 0) {
-			this->window().setFramerateLimit(winfps);
-		}
-	}
+stdwindow::operator window_type&()
+{
+	return this->window();
+}
 
-	explicit operator bool() const
-	{
-		return this->window().isOpen();
-	}
+const stdwindow::window_type* stdwindow::operator->() const
+{
+	return &this->window();
+}
 
-	bool operator!() const
-	{
-		return !bool(*this);
-	}
+const stdwindow::window_type& stdwindow::operator*() const
+{
+	return this->window();
+}
 
-	// direct access
+stdwindow::operator const window_type&() const
+{
+	return this->window();
+}
 
-	window_type* operator->()
-	{
-		return &this->window();
-	}
+// }}}
 
-	window_type& operator*()
-	{
-		return this->window();
-	}
-
-	operator window_type&()
-	{
-		return this->window();
-	}
-
-	const window_type* operator->() const
-	{
-		return &this->window();
-	}
-
-	const window_type& operator*() const
-	{
-		return this->window();
-	}
-
-	operator const window_type&() const
-	{
-		return this->window();
-	}
-
-};
-
-int stdwindow::winstyle;
-int stdwindow::winfps;
-vec2i stdwindow::winsize;
-
-stdwindow stdwin;
+stdwindow stdwin{};

@@ -1,8 +1,17 @@
 /* -*- cpp.doxygen -*- */
 #pragma once
 
-#include <sfml/window.hpp>
-#include "disp/window.cpp"
+/**
+ * \file
+ * \brief SFML Window event loop helpers
+ *
+ * This file provides the event_queue and event_iterator classes, which provide
+ * a simpler interface for the event loop. Additionally, it allows the use of
+ * range-for loops to loop over pending events.
+ */
+
+#include <sfml/window/event.hpp>
+#include "disp/window.hpp"
 
 /**
  * \class event_iterator
@@ -15,6 +24,7 @@
 class event_iterator
 {
 public: // statics
+	using value_type = const sf::Event&;
 private: // variables
 
 	stdwindow* owner;
@@ -22,51 +32,16 @@ private: // variables
 
 public: // methods
 
-	event_iterator()
-		: owner(nullptr)
-	{
-	}
+	event_iterator();
+	event_iterator(stdwindow& init);
 
-	event_iterator(stdwindow& init)
-		: owner(&init)
-	{
-		++*this; // get first element
-	}
+	const value_type& operator*() const;
 
-	const sf::Event& operator*() const&
-	{
-		return event;
-	}
+	event_iterator& operator++();
+	event_iterator operator++(int);
 
-	sf::Event operator*() const&&
-	{
-		return event;
-	}
-
-	event_iterator& operator++()
-	{
-		if(!owner->window().pollEvent(event)) {
-			owner = nullptr;
-		}
-		return *this;
-	}
-
-	event_iterator operator++(int)
-	{
-		auto cpy = *this;
-		++(*this);
-		return cpy;
-	}
-
-	bool operator==(const event_iterator& other) const
-	{
-		return owner == other.owner;
-	}
-
-	bool operator!=(const event_iterator& other) const
-	{
-		return !(*this == other);
-	}
+	bool operator==(const event_iterator& other) const;
+	bool operator!=(const event_iterator& other) const;
 
 };
 
@@ -86,18 +61,8 @@ private: // variables
 
 public: // methods
 
-	event_queue(stdwindow& init)
-		: owner(&init)
-	{
-	}
+	event_queue(stdwindow& init);
 
-	event_iterator begin()
-	{
-		return { *owner };
-	}
-
-	event_iterator end()
-	{
-		return {};
-	}
+	event_iterator begin();
+	event_iterator end();
 };
