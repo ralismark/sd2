@@ -2,7 +2,6 @@
 #pragma once
 
 #include <map>
-#include <type_traits>
 
 namespace res {
 
@@ -10,11 +9,16 @@ namespace res {
 	class base_controller
 	{
 	public: // statics
+
 		using resource_type = R;
 		using key_type      = typename R::key_type;
+
 	private: // variables
+
 		std::map<key_type, resource_type> contain;
+
 	public: // methods
+
 		resource_type& load(key_type key)
 		{
 			if(contain.count(key) > 0) {
@@ -27,6 +31,7 @@ namespace res {
 		{
 			contain.erase(key);
 		}
+
 	};
 
 } // namespace res
