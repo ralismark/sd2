@@ -7,3 +7,6 @@
 [submodule "depends/fmt"]
 	path = depends/fmt
 	url = https://github.com/fmtlib/fmt.git
+[submodule "depends/entityx"]
+	path = depends/entityx
+	url = https://github.com/alecthomas/entityx.git
