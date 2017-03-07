@@ -64,9 +64,10 @@ std::string get_name(method m)
 	case method::shuffle:
 		return "shuffles";
 	}
+	return "unknown";
 }
 
-unsigned int parallel_limit()
+int parallel_limit()
 {
 	return -1;
 	auto lim = std::thread::hardware_concurrency() - 1;
@@ -333,7 +334,7 @@ namespace central {
 				counter += scroll_step;
 			}
 
-			int i = counter;
+			int i = static_cast<int>(counter);
 
 			for(auto& elem : thread::data) {
 				rect.setSize(sf::Vector2f(static_cast<float>(width), static_cast<float>(elem.value * height_step)));
@@ -542,7 +543,7 @@ namespace salgo { // {{{
 	template <typename Iter>
 	void merge2sort(Iter first, Iter last)
 	{
-		size_t step = 1;
+		int step = 1;
 		while(step < last - first) {
 			auto left = first, mid = first + step;
 			while(mid < last) {
