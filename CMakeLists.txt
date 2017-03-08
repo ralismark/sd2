@@ -77,6 +77,8 @@ target_link_libraries(runtime INTERFACE core disp input res)
 add_executable(cvt-export cvt-export.cpp)
 target_link_libraries(cvt-export res)
 
+add_executable(cvt-wrapper cvt-wrapper.cpp)
+
 add_executable(evtest evtest.cpp)
 target_link_libraries(evtest runtime)
 
