@@ -53,8 +53,8 @@ configure_file(
 include_directories("${PROJECT_BINARY_DIR}/h")
 
 # entityx
-set(ENTITYX_BUILD_SHARED 0)
-set(ENTITYX_BUILD_TESTING 0)
+set(ENTITYX_BUILD_SHARED false CACHE BOOL "" FORCE)
+set(ENTITYX_BUILD_TESTING false CACHE BOOL "" FORCE)
 add_subdirectory(depends/entityx)
 
 # headers
