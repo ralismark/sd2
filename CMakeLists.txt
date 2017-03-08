@@ -3,6 +3,9 @@ include(CheckIncludeFileCXX)
 
 project(sd2)
 
+file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/h ${PROJECT_BINARY_DIR}/g)
+include_directories(${PROJECT_BINARY_DIR}/h)
+
 # output directory
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
@@ -50,7 +53,6 @@ configure_file(
 	"${PROJECT_SOURCE_DIR}/config.hpp.in"
 	"${PROJECT_BINARY_DIR}/h/config.hpp"
 )
-include_directories("${PROJECT_BINARY_DIR}/h")
 
 # entityx
 set(ENTITYX_BUILD_SHARED 0)
