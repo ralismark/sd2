@@ -43,7 +43,6 @@
 
 #include "disp/window.hpp"
 
-#include "export/dllport.hpp"
 #include "export/resource.hpp"
 
 #include "include/fmt.hpp"
@@ -59,6 +58,7 @@
 #include "input/button.hpp"
 #include "input/keystate.hpp"
 
+#include "res/dllport.hpp"
 #include "res/except.hpp"
 #include "res/memblk.hpp"
 #include "res/memfile.hpp"

@@ -4,7 +4,7 @@
 #define EXPORTS
 #endif
 
-#include "dllport.hpp"
+#include "res/dllport.hpp"
 #include "include/types.hpp"
 
 extern "C" {

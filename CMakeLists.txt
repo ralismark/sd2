@@ -3,6 +3,9 @@ include(CheckIncludeFileCXX)
 
 project(sd2)
 
+file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/h ${PROJECT_BINARY_DIR}/g)
+include_directories(${PROJECT_BINARY_DIR}/h)
+
 # output directory
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
@@ -50,7 +53,6 @@ configure_file(
 	"${PROJECT_SOURCE_DIR}/config.hpp.in"
 	"${PROJECT_BINARY_DIR}/h/config.hpp"
 )
-include_directories("${PROJECT_BINARY_DIR}/h")
 
 # entityx
 set(ENTITYX_BUILD_SHARED false CACHE BOOL "" FORCE)
@@ -74,6 +76,11 @@ target_link_libraries(runtime INTERFACE core disp input res)
 
 # source
 
+add_executable(cvt-export cvt-export.cpp)
+target_link_libraries(cvt-export res)
+
+add_executable(cvt-wrapper cvt-wrapper.cpp)
+
 add_executable(evtest evtest.cpp)
 target_link_libraries(evtest runtime)
 
@@ -90,3 +97,20 @@ target_link_libraries(stars runtime)
 
 add_executable(estars entity.cpp)
 target_link_libraries(estars runtime entityx)
+
+function(res_export libname)
+	add_custom_command(
+		OUTPUT ${PROJECT_BINARY_DIR}/g/${libname}_lib.cpp ${PROJECT_BINARY_DIR}/g/${libname}_raw.hpp
+		COMMAND $<TARGET_FILE:cvt-export> ${PROJECT_BINARY_DIR}/g/${libname}_lib.cpp ${PROJECT_BINARY_DIR}/g/${libname}_lib.hpp ${libname}_res ${ARGN}
+		DEPENDS cvt-export ${ARGN}
+		)
+	add_library(${libname}_res SHARED ${PROJECT_BINARY_DIR}/g/${libname}_lib.cpp)
+
+	add_custom_command(
+		OUTPUT ${PROJECT_BINARY_DIR}/g/${libname}_wrap.cpp ${PROJECT_BINARY_DIR}/h/${libname}.hpp
+		COMMAND $<TARGET_FILE:cvt-wrapper> ${PROJECT_BINARY_DIR}/g/${libname}_wrap.cpp ${PROJECT_BINARY_DIR}/h/${libname}.hpp export ${PROJECT_BINARY_DIR}/g/${libname}_lib.hpp ${ARGN}
+		DEPENDS cvt-export ${ARGN}
+		)
+	add_library(${libname} ${PROJECT_BINARY_DIR}/g/${libname}_wrap.cpp)
+	target_link_libraries(${libname} ${libname}_res)
+endfunction()
