@@ -11,7 +11,7 @@ namespace stx {
 	using std::optional;
 	using std::bad_optional_access;
 	using std::nullopt_t;
-	constexpr auto& nullopt = std::nullopt;
+	static constexpr auto& nullopt = std::nullopt;
 	using std::make_optional;
 
 } // namespace stx
@@ -25,7 +25,7 @@ namespace stx {
 	using std::experimental::optional;
 	using std::experimental::bad_optional_access;
 	using std::experimental::nullopt_t;
-	constexpr auto& nullopt = std::experimental::nullopt;
+	static constexpr auto& nullopt = std::experimental::nullopt;
 	using std::experimental::make_optional;
 
 } // namespace stx
