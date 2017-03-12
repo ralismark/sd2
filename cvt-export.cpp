@@ -85,6 +85,7 @@ extern "C" {{
 
 		if(!raw_file.open(argv[i], ec)) {
 			fmt::print(std::cerr, "{}: {}: {}\n", argv[0], argv[i], ec.message());
+			return 1;
 		}
 
 		auto ident = fname_to_ident(argv[i]);
