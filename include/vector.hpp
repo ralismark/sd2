@@ -8,9 +8,14 @@ _pp_warn_push();
 	_pp_warn_stop(4244);
 #endif
 
-
 #include "depends/CxxSwizzle/include/swizzle/glsl/scalar_support.h"
 #include "depends/CxxSwizzle/include/swizzle/glsl/vector.h"
+
+namespace swizzle { namespace glsl {
+
+#include "depends/CxxSwizzle/include/swizzle/glsl/vector_functions.h"
+
+} } // namespace swizzle::glsl
 
 _pp_warn_pop();
 
