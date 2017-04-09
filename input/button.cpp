@@ -64,11 +64,11 @@ static switchboard::event get_event(switchboard::state from, switchboard::state 
 	return {};
 }
 
-// struct binfo {{{
-
-void switchboard::binfo::transition(state new_s)
+void switchboard::transition(id_type id, state new_state)
 {
-	if(new_s == s) {
+	binfo& b = buttons[id];
+
+	if(new_state == b.s) {
 		return; // not a transition
 	}
 
@@ -76,23 +76,22 @@ void switchboard::binfo::transition(state new_s)
 	// this is done through defined intermediary steps
 	// then the main transition takes place
 
-	/*  */ if(s == state::idle && new_s == state::active) {
-		this->transition(state::hover);
-	} else if(s == state::idle && new_s == state::persist) {
-		this->transition(state::hover);
-		this->transition(state::active);
-	} else if(s == state::hover && new_s == state::persist) {
-		this->transition(state::active);
-	} else if(s == state::active && new_s == state::idle) {
-		this->transition(state::persist);
-	} else if(s == state::persist && new_s == state::hover) {
-		this->transition(state::active);
+	if(b.s == state::idle && new_state == state::active) {
+		this->transition(id, state::hover);
+	} else if(b.s == state::idle && new_state == state::persist) {
+		this->transition(id, state::hover);
+		this->transition(id, state::active);
+	} else if(b.s == state::hover && new_state == state::persist) {
+		this->transition(id, state::active);
+	} else if(b.s == state::active && new_state == state::idle) {
+		this->transition(id, state::persist);
+	} else if(b.s == state::persist && new_state == state::hover) {
+		this->transition(id, state::active);
 	}
 
-	s = new_s;
+	auto old_state = b.s;
+	b.s = new_state;
 }
-
-// }}}
 
 bool switchboard::exists(id_type id) const
 {
@@ -148,7 +147,7 @@ void switchboard::set_state(id_type id, bool active)
 {
 	if(this->exists(id)) {
 		buttons[id].b.active = active;
-		buttons[id].transition(state::idle); // either mode must begin from idle
+		this->transition(id, state::idle); // either mode must begin from idle
 	}
 }
 
@@ -189,13 +188,13 @@ void switchboard::process(const sf::Event& e)
 
 			bool contained = wincontained && bi.b.contains(pos);
 			if(bi.s == state::idle && contained) {
-				bi.transition(state::hover);
+				this->transition(pair.first, state::hover);
 			} else if(bi.s == state::hover && !contained) {
-				bi.transition(state::idle);
+				this->transition(pair.first, state::idle);
 			} else if(bi.s == state::active && !contained) {
-				bi.transition(state::persist);
+				this->transition(pair.first, state::persist);
 			} else if(bi.s == state::persist && contained) {
-				bi.transition(state::active);
+				this->transition(pair.first, state::active);
 			}
 		}
 	} else if(e.type == sf::Event::MouseButtonPressed) {
@@ -219,7 +218,7 @@ void switchboard::process(const sf::Event& e)
 
 			bool contained = wincontained && bi.b.contains(pos);
 			if(contained) {
-				bi.transition(state::active);
+				this->transition(pair.first, state::active);
 			}
 		}
 	} else if(e.type == sf::Event::MouseButtonReleased) {
@@ -244,15 +243,15 @@ void switchboard::process(const sf::Event& e)
 
 			bool contained = wincontained && bi.b.contains(pos);
 			if(bi.s == state::persist && contained) {
-				bi.transition(state::active);
+				this->transition(pair.first, state::active);
 			} else if(bi.s == state::active && !contained) {
-				bi.transition(state::persist);
+				this->transition(pair.first, state::persist);
 			}
 
 			if(bi.s == state::persist) {
-				bi.transition(state::idle);
+				this->transition(pair.first, state::idle);
 			} else if(bi.s == state::active) {
-				bi.transition(state::hover);
+				this->transition(pair.first, state::hover);
 			}
 		}
 	} else if(e.type == sf::Event::LostFocus) {
@@ -268,7 +267,7 @@ void switchboard::process(const sf::Event& e)
 			}
 
 			if(bi.s != state::idle) {
-				bi.transition(state::idle);
+				this->transition(pair.first, state::idle);
 			}
 		}
 	} else if(e.type == sf::Event::MouseLeft) {
@@ -284,10 +283,10 @@ void switchboard::process(const sf::Event& e)
 			}
 
 			if(bi.s == state::hover) {
-				bi.transition(state::idle);
+				this->transition(pair.first, state::idle);
 			}
 			if(bi.s == state::active) {
-				bi.transition(state::persist);
+				this->transition(pair.first, state::persist);
 			}
 		}
 	}
