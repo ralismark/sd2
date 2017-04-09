@@ -81,8 +81,8 @@ namespace store {{
 		output_using_memblk(argc - 5, argv + 5);
 	}
 
-	fmt::print(o_src, "\n}}");
-	fmt::print(o_head, "\n}}");
+	fmt::print(o_src, "\n}} // namespace store");
+	fmt::print(o_head, "\n}} // namespace store");
 }
 
 int main(int argc, char** argv)

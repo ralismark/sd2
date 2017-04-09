@@ -35,7 +35,7 @@ public: // methods
 	event_iterator();
 	event_iterator(stdwindow& init);
 
-	const value_type& operator*() const;
+	value_type operator*() const;
 
 	event_iterator& operator++();
 	event_iterator operator++(int);
