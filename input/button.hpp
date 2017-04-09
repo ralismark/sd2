@@ -92,9 +92,9 @@ private: // internal statics
 	struct binfo {
 		button b;
 		state s;
-
-		void transition(state new_s);
 	};
+
+	void transition(id_type id, state new_state);
 
 private: // variables
 
