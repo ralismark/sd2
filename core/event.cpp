@@ -3,17 +3,17 @@
 // class event_iterator {{{
 
 event_iterator::event_iterator()
-	: owner(nullptr)
+	: owner(nullptr), event()
 {
 }
 
 event_iterator::event_iterator(stdwindow& init)
-	: owner(&init)
+	: owner(&init), event()
 {
 	++*this; // get first element
 }
 
-const event_iterator::value_type& event_iterator::operator*() const
+event_iterator::value_type event_iterator::operator*() const
 {
 	return event;
 }

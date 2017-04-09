@@ -2,9 +2,9 @@
 
 // class stdwindow {{{
 
-int stdwindow::winstyle{};
-int stdwindow::winfps{};
-vec2i stdwindow::winsize{};
+int stdwindow::winstyle;
+int stdwindow::winfps;
+vec2i stdwindow::winsize;
 
 stdwindow::window_type& stdwindow::get_win()
 {
