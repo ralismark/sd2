@@ -2,6 +2,8 @@
 
 #include "disp/window.hpp"
 
+#include <cassert>
+
 // class button {{{
 
 button::button()
@@ -61,11 +63,14 @@ static switchboard::event get_event(switchboard::state from, switchboard::state 
 		return event::away_release;
 	}
 
+	assert(false && "invalid state transition");
 	return {};
 }
 
 void switchboard::transition(id_type id, state new_state)
 {
+	assert(buttons.count(id) > 0 && "button must exist");
+
 	binfo& b = buttons[id];
 
 	if(new_state == b.s) {
