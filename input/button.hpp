@@ -73,9 +73,9 @@ public: // statics
 		hover_on, // idle -> hover
 		hover_off, // hover -> idle
 		press, // hover -> active
-		release, // press -> active
-		reenter, // persist -> active
+		release, // active -> hover
 		leave, // active -> persist
+		reenter, // persist -> active
 		away_release, // persist -> idle
 		// cannot happen: away_press, // idle -> persist
 	};
