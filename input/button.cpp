@@ -31,6 +31,39 @@ bool button::contains(const vector_type& pos) const
 
 // class switchboard {{{
 
+static switchboard::event get_event(switchboard::state from, switchboard::state to)
+{
+	using state = switchboard::state;
+	using event = switchboard::event;
+
+	if(from == state::idle && to == state::hover) {
+		return event::hover_on;
+	}
+	if(from == state::hover && to == state::idle) {
+		return event::hover_off;
+	}
+
+	if(from == state::hover && to == state::active) {
+		return event::press;
+	}
+	if(from == state::active && to == state::hover) {
+		return event::release;
+	}
+
+	if(from == state::active && to == state::persist) {
+		return event::leave;
+	}
+	if(from == state::persist && to == state::active) {
+		return event::reenter;
+	}
+
+	if(from == state::persist && to == state::idle) {
+		return event::away_release;
+	}
+
+	return {};
+}
+
 // struct binfo {{{
 
 void switchboard::binfo::transition(state new_s)
