@@ -1,26 +1,35 @@
 #pragma once
 
-#include "preproc.hpp"
+#include "depends/velm/include/velm.hpp"
 
-_pp_warn_push();
+// these are conversions to sf::vector, which allow velm::vector to be used
+// semi-transparently with the SFML API
 
-#if defined(COMPILER_MSVC)
-	_pp_warn_stop(4244);
-#endif
+#include <sfml/system/vector2.hpp>
+#include <sfml/system/vector3.hpp>
 
-#include "depends/CxxSwizzle/include/swizzle/glsl/scalar_support.h"
-#include "depends/CxxSwizzle/include/swizzle/glsl/vector.h"
+template <typename T>
+struct velm::converter_to<sf::Vector2<T>>
+{
+	template <typename... Ts>
+	sf::Vector2<T> operator()(Ts&&... args) const
+	{
+		return sf::Vector2<T>{std::forward<Ts>(args)...};
+	}
+};
 
-namespace swizzle { namespace glsl {
-
-#include "depends/CxxSwizzle/include/swizzle/glsl/vector_functions.h"
-
-} } // namespace swizzle::glsl
-
-_pp_warn_pop();
+template <typename T>
+struct velm::converter_to<sf::Vector3<T>>
+{
+	template <typename... Ts>
+	sf::Vector3<T> operator()(Ts&&... args) const
+	{
+		return sf::Vector3<T>{std::forward<Ts>(args)...};
+	}
+};
 
 template <typename T, size_t N>
-using vector = swizzle::glsl::vector<T, N>;
+using vector = velm::vector<T, N>;
 
 using vec2  = vector<double,       2>;
 using vec2i = vector<int,          2>;
