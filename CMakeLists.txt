@@ -82,6 +82,23 @@ target_link_libraries(cvt-export res)
 
 add_executable(cvt-wrapper cvt-wrapper.cpp)
 
+function(res_export libname)
+	add_custom_command(
+		OUTPUT ${PROJECT_BINARY_DIR}/g/${libname}_lib.cpp ${PROJECT_BINARY_DIR}/g/${libname}_lib.hpp
+		COMMAND $<TARGET_FILE:cvt-export> ${PROJECT_BINARY_DIR}/g/${libname}_lib.cpp ${PROJECT_BINARY_DIR}/g/${libname}_lib.hpp ${libname}_res ${ARGN}
+		DEPENDS cvt-export ${ARGN}
+		)
+	add_library(${libname}_res SHARED ${PROJECT_BINARY_DIR}/g/${libname}_lib.cpp)
+
+	add_custom_command(
+		OUTPUT ${PROJECT_BINARY_DIR}/g/${libname}_wrap.cpp ${PROJECT_BINARY_DIR}/h/${libname}.hpp
+		COMMAND $<TARGET_FILE:cvt-wrapper> ${PROJECT_BINARY_DIR}/g/${libname}_wrap.cpp ${PROJECT_BINARY_DIR}/h/${libname}.hpp export ${PROJECT_BINARY_DIR}/g/${libname}_lib.hpp ${ARGN}
+		DEPENDS cvt-export
+		)
+	add_library(${libname} ${PROJECT_BINARY_DIR}/g/${libname}_wrap.cpp)
+	target_link_libraries(${libname} ${libname}_res)
+endfunction()
+
 add_executable(evtest evtest.cpp)
 target_link_libraries(evtest runtime)
 
@@ -99,19 +116,4 @@ target_link_libraries(stars runtime)
 add_executable(estars entity.cpp)
 target_link_libraries(estars runtime entityx)
 
-function(res_export libname)
-	add_custom_command(
-		OUTPUT ${PROJECT_BINARY_DIR}/g/${libname}_lib.cpp ${PROJECT_BINARY_DIR}/g/${libname}_lib.hpp
-		COMMAND $<TARGET_FILE:cvt-export> ${PROJECT_BINARY_DIR}/g/${libname}_lib.cpp ${PROJECT_BINARY_DIR}/g/${libname}_lib.hpp ${libname}_res ${ARGN}
-		DEPENDS cvt-export ${ARGN}
-		)
-	add_library(${libname}_res SHARED ${PROJECT_BINARY_DIR}/g/${libname}_lib.cpp)
 
-	add_custom_command(
-		OUTPUT ${PROJECT_BINARY_DIR}/g/${libname}_wrap.cpp ${PROJECT_BINARY_DIR}/h/${libname}.hpp
-		COMMAND $<TARGET_FILE:cvt-wrapper> ${PROJECT_BINARY_DIR}/g/${libname}_wrap.cpp ${PROJECT_BINARY_DIR}/h/${libname}.hpp export ${PROJECT_BINARY_DIR}/g/${libname}_lib.hpp ${ARGN}
-		DEPENDS cvt-export
-		)
-	add_library(${libname} ${PROJECT_BINARY_DIR}/g/${libname}_wrap.cpp)
-	target_link_libraries(${libname} ${libname}_res)
-endfunction()
