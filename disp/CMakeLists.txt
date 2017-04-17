@@ -1,3 +1,3 @@
 add_library(disp
-	window.cpp
+	window.cpp line.cpp
 	)
