@@ -9,4 +9,4 @@
 	url = https://github.com/fmtlib/fmt.git
 [submodule "depends/entityx"]
 	path = depends/entityx
-	url = https://github.com/alecthomas/entityx.git
+	url = https://github.com/ralismark/entityx.git
