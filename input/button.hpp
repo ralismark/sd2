@@ -60,7 +60,7 @@ public: // statics
 	 * transitions, e.g. the mouse both moves and presses the button.
 	 */
 
-public: // variables
+private: // variables
 
 	sf::Rect<dimension_type> bound;
 	state condition;
@@ -72,6 +72,11 @@ public: // methods
 	button(const sf::Rect<dimension_type>& init_bound);
 
 	bool contains(const vector_type& pos) const;
+
+	state current_state() const;
+	sf::Rect<dimension_type> region() const;
+	// Note: This automatically sets the state to idle
+	std::list<event> region(sf::Rect<dimension_type> new_bound);
 
 	std::list<event> transition(state new_state);
 };
