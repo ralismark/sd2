@@ -60,6 +60,22 @@ bool button::contains(const vector_type& pos) const
 	return bound.contains(pos.x, pos.y);
 }
 
+button::state button::current_state() const
+{
+	return condition;
+}
+
+sf::Rect<button::dimension_type> button::region() const
+{
+	return bound;
+}
+
+std::list<button::event> button::region(sf::Rect<dimension_type> new_bound)
+{
+	bound = new_bound;
+	return this->transition(state::idle);
+}
+
 std::list<button::event> button::transition(state new_state)
 {
 	std::list<event> out;
