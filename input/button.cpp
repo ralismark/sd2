@@ -8,19 +8,16 @@
 
 button::button()
 	: bound()
-	, active(false)
 {
 }
 
 button::button(const vector_type& pos, const vector_type& size)
 	: bound(pos.x, pos.y, size.x, size.y)
-	, active(false)
 {
 }
 
 button::button(const sf::Rect<dimension_type>& init_bound)
 	: bound(init_bound)
-	, active(false)
 {
 }
 
@@ -139,23 +136,6 @@ button* switchboard::get(id_type id)
 	return const_cast<button*>(const_out);
 }
 
-// also false if not present
-bool switchboard::is_active(id_type id) const
-{
-	if(!this->exists(id)) {
-		return false;
-	}
-	return this->get(id)->active;
-}
-
-void switchboard::set_state(id_type id, bool active)
-{
-	if(this->exists(id)) {
-		buttons[id].b.active = active;
-		this->transition(id, state::idle); // either mode must begin from idle
-	}
-}
-
 void switchboard::process(const sf::Event& e)
 { // {{{
 	/*
@@ -187,9 +167,6 @@ void switchboard::process(const sf::Event& e)
 
 		for(auto& pair : buttons) {
 			auto& bi = pair.second;
-			if(!bi.b.active) {
-				continue;
-			}
 
 			bool contained = wincontained && bi.b.contains(pos);
 			if(bi.s == state::idle && contained) {
@@ -217,9 +194,6 @@ void switchboard::process(const sf::Event& e)
 
 		for(auto& pair : buttons) {
 			auto& bi = pair.second;
-			if(!bi.b.active) {
-				continue;
-			}
 
 			bool contained = wincontained && bi.b.contains(pos);
 			if(contained) {
@@ -242,9 +216,6 @@ void switchboard::process(const sf::Event& e)
 
 		for(auto& pair : buttons) {
 			auto& bi = pair.second;
-			if(!bi.b.active) {
-				continue;
-			}
 
 			bool contained = wincontained && bi.b.contains(pos);
 			if(bi.s == state::persist && contained) {
@@ -267,9 +238,6 @@ void switchboard::process(const sf::Event& e)
 		 */
 		for(auto& pair : buttons) {
 			auto& bi = pair.second;
-			if(!bi.b.active) {
-				continue;
-			}
 
 			if(bi.s != state::idle) {
 				this->transition(pair.first, state::idle);
@@ -283,9 +251,6 @@ void switchboard::process(const sf::Event& e)
 		 */
 		for(auto& pair : buttons) {
 			auto& bi = pair.second;
-			if(!bi.b.active) {
-				continue;
-			}
 
 			if(bi.s == state::hover) {
 				this->transition(pair.first, state::idle);
