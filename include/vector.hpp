@@ -8,25 +8,68 @@
 #include <sfml/system/vector2.hpp>
 #include <sfml/system/vector3.hpp>
 
-template <typename T>
-struct velm::converter_to<sf::Vector2<T>>
-{
-	template <typename... Ts>
-	sf::Vector2<T> operator()(Ts&&... args) const
-	{
-		return sf::Vector2<T>{std::forward<Ts>(args)...};
-	}
-};
+namespace velm { namespace usr {
 
-template <typename T>
-struct velm::converter_to<sf::Vector3<T>>
-{
-	template <typename... Ts>
-	sf::Vector3<T> operator()(Ts&&... args) const
+	template <typename T>
+	struct tie<sf::Vector2<T>>
 	{
-		return sf::Vector3<T>{std::forward<Ts>(args)...};
-	}
-};
+		auto operator()(const sf::Vector2<T>&& val) const
+		{
+			return std::make_tuple(val.x, val.y);
+		}
+
+		auto operator()(const sf::Vector2<T>& val) const
+		{
+			return std::tie(val.x, val.y);
+		}
+
+		auto operator()(sf::Vector2<T>& val) const
+		{
+			return std::tie(val.x, val.y);
+		}
+	};
+
+	template <typename T>
+	struct converter_to<sf::Vector2<T>>
+	{
+		template <typename... Ts>
+		sf::Vector2<T> operator()(Ts&&... args) const
+		{
+			return sf::Vector2<T>{std::forward<Ts>(args)...};
+		}
+	};
+
+
+	template <typename T>
+	struct tie<sf::Vector3<T>>
+	{
+		auto operator()(const sf::Vector3<T>&& val) const
+		{
+			return std::make_tuple(val.x, val.y, val.z);
+		}
+
+		auto operator()(const sf::Vector3<T>& val) const
+		{
+			return std::tie(val.x, val.y, val.z);
+		}
+
+		auto operator()(sf::Vector3<T>& val) const
+		{
+			return std::tie(val.x, val.y, val.z);
+		}
+	};
+
+	template <typename T>
+	struct converter_to<sf::Vector3<T>>
+	{
+		template <typename... Ts>
+		sf::Vector3<T> operator()(Ts&&... args) const
+		{
+			return sf::Vector3<T>{std::forward<Ts>(args)...};
+		}
+	};
+
+} } // namespace velm::usr
 
 template <typename T, size_t N>
 using vector = velm::vector<T, N>;
