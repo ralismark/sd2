@@ -26,7 +26,6 @@ public: // statics
 public: // variables
 
 	sf::Rect<dimension_type> bound;
-	bool active;
 
 public: // methods
 
@@ -110,10 +109,6 @@ public: // statics
 
 	const button* get(id_type id) const;
 	button* get(id_type id);
-
-	// also false if not present
-	bool is_active(id_type id) const;
-	void set_state(id_type id, bool active);
 
 	// }}}
 
