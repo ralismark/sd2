@@ -30,11 +30,8 @@ bool button::contains(const vector_type& pos) const
 
 // class switchboard {{{
 
-static switchboard::event get_event(switchboard::state from, switchboard::state to)
+static event get_event(state from, state to)
 {
-	using state = switchboard::state;
-	using event = switchboard::event;
-
 	if(from == state::idle && to == state::hover) {
 		return event::hover_on;
 	}
