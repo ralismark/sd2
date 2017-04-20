@@ -60,10 +60,12 @@ bool button::contains(const vector_type& pos) const
 	return bound.contains(pos.x, pos.y);
 }
 
-void button::transition(state new_state)
+std::list<button::event> button::transition(state new_state)
 {
+	std::list<event> out;
+
 	if(new_state == condition) {
-		return; // null transition
+		return out; // null transition
 	}
 
 	// ensure only valid transitions happen
@@ -71,19 +73,33 @@ void button::transition(state new_state)
 	// then the main transition takes place
 
 	if(condition == state::idle && new_state == state::active) {
-		this->transition(id, state::hover);
+		auto step = this->transition(id, state::hover);
+
+		out.splice(out.end(), std::move(step));
 	} else if(condition == state::idle && new_state == state::persist) {
-		this->transition(id, state::hover);
-		this->transition(id, state::active);
+		auto step1 = this->transition(id, state::hover);
+		auto step2 = this->transition(id, state::active);
+
+		out.splice(out.end(), std::move(step1));
+		out.splice(out.end(), std::move(step2));
 	} else if(condition == state::hover && new_state == state::persist) {
-		this->transition(id, state::active);
+		auto step = this->transition(id, state::active);
+
+		out.splice(out.end(), std::move(step));
 	} else if(condition == state::active && new_state == state::idle) {
-		this->transition(id, state::persist);
+		auto step = this->transition(id, state::persist);
+
+		out.splice(out.end(), std::move(step));
 	} else if(condition == state::persist && new_state == state::hover) {
-		this->transition(id, state::active);
+		auto step = this->transition(id, state::active);
+
+		out.splice(out.end(), std::move(step));
 	}
 
+	out.emplace_back(get_event(condition, new_state));
 	condition = new_state;
+
+	return out;
 }
 
 // }}}

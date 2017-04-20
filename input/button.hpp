@@ -2,6 +2,7 @@
 #pragma once
 
 #include <map>
+#include <list>
 
 #include <sfml/graphics/rect.hpp>
 #include <sfml/window/event.hpp>
@@ -72,7 +73,7 @@ public: // methods
 
 	bool contains(const vector_type& pos) const;
 
-	void transition(state new_state);
+	std::list<event> transition(state new_state);
 };
 
 // Temporary, allows existing code to compile
