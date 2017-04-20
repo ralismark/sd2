@@ -62,6 +62,7 @@ public: // statics
 public: // variables
 
 	sf::Rect<dimension_type> bound;
+	state condition;
 
 public: // methods
 
@@ -70,6 +71,8 @@ public: // methods
 	button(const sf::Rect<dimension_type>& init_bound);
 
 	bool contains(const vector_type& pos) const;
+
+	void transition(state new_state);
 };
 
 // Temporary, allows existing code to compile
@@ -92,16 +95,11 @@ public: // statics
 
 private: // internal statics
 
-	struct binfo {
-		button b;
-		state s;
-	};
-
 	void transition(id_type id, state new_state);
 
 private: // variables
 
-	std::map<id_type, binfo> buttons;
+	std::map<id_type, button> buttons;
 
 public: // statics
 
