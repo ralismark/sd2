@@ -4,39 +4,6 @@
 
 #include <cassert>
 
-static std::list<event> get_event(state from, state to)
-{
-	using state = button::state;
-	using event = button::event;
-
-	using event_table = std::map<std::pair<state, state>, std::list<button::event>>;
-	static const event_table transitions = {
-		/*   state from      state to           triggered events */
-		{ { state::idle,    state::idle    }, { /* none*/                                   } },
-		{ { state::idle,    state::hover   }, { event::hover_on                             } },
-		{ { state::idle,    state::active  }, { event::hover_on, event::press               } },
-		{ { state::idle,    state::persist }, { event::hover_on, event::press, event::leave } },
-		{ { state::hover,   state::idle    }, { event::hover_off                            } },
-		{ { state::hover,   state::hover   }, { /* none*/                                   } },
-		{ { state::hover,   state::active  }, { event::press                                } },
-		{ { state::hover,   state::persist }, { event::press, event::leave                  } },
-		{ { state::active,  state::idle    }, { event::leave, event::away_release           } },
-		{ { state::active,  state::hover   }, { event::release                              } },
-		{ { state::active,  state::active  }, { /* none*/                                   } },
-		{ { state::active,  state::persist }, { event::leave                                } },
-		{ { state::persist, state::idle    }, { event::away_release                         } },
-		{ { state::persist, state::hover   }, { event::reenter, event::release              } },
-		{ { state::persist, state::active  }, { event::reenter                              } },
-		{ { state::persist, state::persist }, { /* none*/                                   } }
-	};
-
-	auto change_pair = std::make_pair(from, to);
-	auto events = transitions.find(change_pair);
-
-	assert(events != transitions.end() && "Transition not valid, invalid enum values?");
-	return *events;
-}
-
 // class button {{{
 
 button::button()
@@ -80,9 +47,33 @@ std::list<button::event> button::region(sf::Rect<dimension_type> new_bound)
 
 std::list<button::event> button::transition(state new_state)
 {
-	std::list<event> out = get_event(condition, new_state);
+	using event_table = std::map<std::pair<state, state>, std::list<button::event>>;
+	static const event_table transitions = {
+		/*   state from      state to           triggered events */
+		{ { state::idle,    state::idle    }, { /* none*/                                   } },
+		{ { state::idle,    state::hover   }, { event::hover_on                             } },
+		{ { state::idle,    state::active  }, { event::hover_on, event::press               } },
+		{ { state::idle,    state::persist }, { event::hover_on, event::press, event::leave } },
+		{ { state::hover,   state::idle    }, { event::hover_off                            } },
+		{ { state::hover,   state::hover   }, { /* none*/                                   } },
+		{ { state::hover,   state::active  }, { event::press                                } },
+		{ { state::hover,   state::persist }, { event::press, event::leave                  } },
+		{ { state::active,  state::idle    }, { event::leave, event::away_release           } },
+		{ { state::active,  state::hover   }, { event::release                              } },
+		{ { state::active,  state::active  }, { /* none*/                                   } },
+		{ { state::active,  state::persist }, { event::leave                                } },
+		{ { state::persist, state::idle    }, { event::away_release                         } },
+		{ { state::persist, state::hover   }, { event::reenter, event::release              } },
+		{ { state::persist, state::active  }, { event::reenter                              } },
+		{ { state::persist, state::persist }, { /* none*/                                   } }
+	};
+
+	auto change_pair = std::make_pair(condition, new_state);
+	auto events = transitions.find(change_pair);
+	assert(events != transitions.end() && "Transition not valid, invalid enum values?");
+
 	condition = new_state;
-	return out;
+	return events->second;
 }
 
 // }}}
