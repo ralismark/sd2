@@ -4,35 +4,37 @@
 
 #include <cassert>
 
-static event get_event(state from, state to)
+static std::list<event> get_event(state from, state to)
 {
-	if(from == state::idle && to == state::hover) {
-		return event::hover_on;
-	}
-	if(from == state::hover && to == state::idle) {
-		return event::hover_off;
-	}
+	using state = button::state;
+	using event = button::event;
 
-	if(from == state::hover && to == state::active) {
-		return event::press;
-	}
-	if(from == state::active && to == state::hover) {
-		return event::release;
-	}
+	using event_table = std::map<std::pair<state, state>, std::list<button::event>>;
+	static const event_table transitions = {
+		/*   state from      state to           triggered events */
+		{ { state::idle,    state::idle    }, { /* none*/                                   } },
+		{ { state::idle,    state::hover   }, { event::hover_on                             } },
+		{ { state::idle,    state::active  }, { event::hover_on, event::press               } },
+		{ { state::idle,    state::persist }, { event::hover_on, event::press, event::leave } },
+		{ { state::hover,   state::idle    }, { event::hover_off                            } },
+		{ { state::hover,   state::hover   }, { /* none*/                                   } },
+		{ { state::hover,   state::active  }, { event::press                                } },
+		{ { state::hover,   state::persist }, { event::press, event::leave                  } },
+		{ { state::active,  state::idle    }, { event::leave, event::away_release           } },
+		{ { state::active,  state::hover   }, { event::release                              } },
+		{ { state::active,  state::active  }, { /* none*/                                   } },
+		{ { state::active,  state::persist }, { event::leave                                } },
+		{ { state::persist, state::idle    }, { event::away_release                         } },
+		{ { state::persist, state::hover   }, { event::reenter, event::release              } },
+		{ { state::persist, state::active  }, { event::reenter                              } },
+		{ { state::persist, state::persist }, { /* none*/                                   } }
+	};
 
-	if(from == state::active && to == state::persist) {
-		return event::leave;
-	}
-	if(from == state::persist && to == state::active) {
-		return event::reenter;
-	}
+	auto change_pair = std::make_pair(from, to);
+	auto events = transitions.find(change_pair);
 
-	if(from == state::persist && to == state::idle) {
-		return event::away_release;
-	}
-
-	assert(false && "invalid state transition");
-	return {};
+	assert(events != transitions.end() && "Transition not valid, invalid enum values?");
+	return *events;
 }
 
 // class button {{{
@@ -78,43 +80,8 @@ std::list<button::event> button::region(sf::Rect<dimension_type> new_bound)
 
 std::list<button::event> button::transition(state new_state)
 {
-	std::list<event> out;
-
-	if(new_state == condition) {
-		return out; // null transition
-	}
-
-	// ensure only valid transitions happen
-	// this is done through defined intermediary steps
-	// then the main transition takes place
-
-	if(condition == state::idle && new_state == state::active) {
-		auto step = this->transition(id, state::hover);
-
-		out.splice(out.end(), std::move(step));
-	} else if(condition == state::idle && new_state == state::persist) {
-		auto step1 = this->transition(id, state::hover);
-		auto step2 = this->transition(id, state::active);
-
-		out.splice(out.end(), std::move(step1));
-		out.splice(out.end(), std::move(step2));
-	} else if(condition == state::hover && new_state == state::persist) {
-		auto step = this->transition(id, state::active);
-
-		out.splice(out.end(), std::move(step));
-	} else if(condition == state::active && new_state == state::idle) {
-		auto step = this->transition(id, state::persist);
-
-		out.splice(out.end(), std::move(step));
-	} else if(condition == state::persist && new_state == state::hover) {
-		auto step = this->transition(id, state::active);
-
-		out.splice(out.end(), std::move(step));
-	}
-
-	out.emplace_back(get_event(condition, new_state));
+	std::list<event> out = get_event(condition, new_state);
 	condition = new_state;
-
 	return out;
 }
 
