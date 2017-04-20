@@ -15,6 +15,9 @@
  * This class contains a minimal set of members which are able to define a
  * button. This does not contain any functionality - that is provided by the
  * switchboard class.
+ *
+ * Each button is implemented as a finite state machine, the details can be
+ * seen below.
  */
 class button
 {
@@ -22,36 +25,6 @@ public: // statics
 
 	using dimension_type = int;
 	using vector_type = vector<int, 2>;
-
-public: // variables
-
-	sf::Rect<dimension_type> bound;
-
-public: // methods
-
-	button();
-	button(const vector_type& pos, const vector_type& size);
-	button(const sf::Rect<dimension_type>& init_bound);
-
-	bool contains(const vector_type& pos) const;
-};
-
-/**
- * \class switchboard
- * \brief button manager
- *
- * This class contains a group of buttons, linked to their own ID's. A
- * switchboard also processes incoming events to allow reacting to specific
- * triggers (see below).
- *
- * Each button is implemented as a finite state machine, the details can be
- * seen below.
- */
-class switchboard
-{
-public: // statics
-
-	using id_type = int;
 
 	/*
 	 * The state of a button and the cursor can be represented as a state
@@ -85,6 +58,37 @@ public: // statics
 	 * MouseButtonReleased, there is no way for ambiguity between
 	 * transitions, e.g. the mouse both moves and presses the button.
 	 */
+
+public: // variables
+
+	sf::Rect<dimension_type> bound;
+
+public: // methods
+
+	button();
+	button(const vector_type& pos, const vector_type& size);
+	button(const sf::Rect<dimension_type>& init_bound);
+
+	bool contains(const vector_type& pos) const;
+};
+
+// Temporary, allows existing code to compile
+using event = button::event;
+using state = button::state;
+
+/**
+ * \class switchboard
+ * \brief button manager
+ *
+ * This class contains a group of buttons, linked to their own ID's. A
+ * switchboard also processes incoming events to allow reacting to specific
+ * triggers (see below).
+ */
+class switchboard
+{
+public: // statics
+
+	using id_type = int;
 
 private: // internal statics
 
