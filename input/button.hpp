@@ -79,7 +79,7 @@ public: // methods
 	std::list<event> region(sf::Rect<dimension_type> new_bound);
 
 	std::list<event> transition(state new_state);
-	void process(const sf::Event& e);
+	std::list<event> process(const sf::Event& e);
 };
 
 // Temporary, allows existing code to compile
