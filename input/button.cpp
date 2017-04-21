@@ -76,6 +76,111 @@ std::list<button::event> button::transition(state new_state)
 	return events->second;
 }
 
+void button::process(const sf::Event& e)
+{ // {{{
+	/*
+	 * possible transition are displayed in a diagram
+	 *
+	 * top left:     idle
+	 * top right:    hover
+	 * bottom left:  persist
+	 * bottom right: active
+	 *
+	 * small o's are states
+	 * large O's are terminating states
+	 */
+	static auto winarea = sf::Rect<button::dimension_type>(0, 0, stdwin.winsize.x, stdwin.winsize.y);
+
+	if(e.type == sf::Event::MouseMoved) {
+		/*
+		 * O <> O
+		 *
+		 * O <> O
+		 */
+		// only trigger if has focus
+		if(!stdwin->hasFocus()) {
+			return;
+		}
+
+		vec2i pos(e.mouseMove.x, e.mouseMove.y);
+		bool wincontained = winarea.contains(pos);
+		bool contained = wincontained && this->contains(pos);
+
+		if(condition == state::idle && contained) {
+			this->transition(state::hover);
+		} else if(condition == state::hover && !contained) {
+			this->transition(state::idle);
+		} else if(condition == state::active && !contained) {
+			this->transition(state::persist);
+		} else if(condition == state::persist && contained) {
+			this->transition(state::active);
+		}
+	} else if(e.type == sf::Event::MouseButtonPressed) {
+		/*
+		 * o -> o
+		 *      v
+		 * o    O
+		 */
+		if(e.mouseButton.button != sf::Mouse::Left) {
+			return;
+		}
+		// a press requires focus - we don't care otherwise
+		vec2i pos(e.mouseButton.x, e.mouseButton.y);
+		bool wincontained = winarea.contains(pos);
+		bool contained = wincontained && this->contains(pos);
+
+		if(contained) {
+			this->transition(pair.first, state::active);
+		}
+	} else if(e.type == sf::Event::MouseButtonReleased) {
+		/*
+		 * O    O
+		 * ^    ^
+		 * o <> o
+		 */
+		if(e.mouseButton.button != sf::Mouse::Left) {
+			return;
+		}
+		// note: this event may not trigger if focus is lost
+
+		vec2i pos(e.mouseButton.x, e.mouseButton.y);
+		bool wincontained = winarea.contains(pos);
+		bool contained = wincontained && this->contains(pos);
+
+		if(bi.condition == state::persist && contained) {
+			this->transition(pair.first, state::active);
+		} else if(bi.condition == state::active && !contained) {
+			this->transition(pair.first, state::persist);
+		}
+
+		if(bi.condition == state::persist) {
+			this->transition(pair.first, state::idle);
+		} else if(bi.condition == state::active) {
+			this->transition(pair.first, state::hover);
+		}
+	} else if(e.type == sf::Event::LostFocus) {
+		/*
+		 * O <- o
+		 * ^
+		 * o <- o
+		 */
+		if(bi.condition != state::idle) {
+			this->transition(pair.first, state::idle);
+		}
+	} else if(e.type == sf::Event::MouseLeft) {
+		/*
+		 * O <- o
+		 *
+		 * O <- o
+		 */
+		if(bi.condition == state::hover) {
+			this->transition(pair.first, state::idle);
+		} else if(bi.condition == state::active) {
+			this->transition(pair.first, state::persist);
+		}
+	}
+} // }}}
+
 // }}}
 
 // class switchboard {{{
@@ -129,129 +234,11 @@ button* switchboard::get(id_type id)
 }
 
 void switchboard::process(const sf::Event& e)
-{ // {{{
-	/*
-	 * possible transition are displayed in a diagram
-	 *
-	 * top left:     idle
-	 * top right:    hover
-	 * bottom left:  persist
-	 * bottom right: active
-	 *
-	 * small o's are states
-	 * large O's are terminating states
-	 */
-	static auto winarea = sf::Rect<button::dimension_type>(0, 0, stdwin.winsize.x, stdwin.winsize.y);
-
-	if(e.type == sf::Event::MouseMoved) {
-		/*
-		 * O <> O
-		 *
-		 * O <> O
-		 */
-		// only trigger if has focus
-		if(!stdwin->hasFocus()) {
-			return;
-		}
-
-		vec2i pos(e.mouseMove.x, e.mouseMove.y);
-		bool wincontained = winarea.contains(pos.x, pos.y);
-
-		for(auto& pair : buttons) {
-			auto& bi = pair.second;
-
-			bool contained = wincontained && bi.b.contains(pos);
-			if(bi.condition == state::idle && contained) {
-				this->transition(pair.first, state::hover);
-			} else if(bi.condition == state::hover && !contained) {
-				this->transition(pair.first, state::idle);
-			} else if(bi.condition == state::active && !contained) {
-				this->transition(pair.first, state::persist);
-			} else if(bi.condition == state::persist && contained) {
-				this->transition(pair.first, state::active);
-			}
-		}
-	} else if(e.type == sf::Event::MouseButtonPressed) {
-		/*
-		 * o -> o
-		 *      v
-		 * o    O
-		 */
-		if(e.mouseButton.button != sf::Mouse::Left) {
-			return;
-		}
-		// a press requires focus - we don't care
-		vec2i pos(e.mouseButton.x, e.mouseButton.y);
-		bool wincontained = winarea.contains(pos.x, pos.y);
-
-		for(auto& pair : buttons) {
-			auto& bi = pair.second;
-
-			bool contained = wincontained && bi.b.contains(pos);
-			if(contained) {
-				this->transition(pair.first, state::active);
-			}
-		}
-	} else if(e.type == sf::Event::MouseButtonReleased) {
-		/*
-		 * O    O
-		 * ^    ^
-		 * o <> o
-		 */
-		if(e.mouseButton.button != sf::Mouse::Left) {
-			return;
-		}
-		// note: this event may not trigger if focus is lost
-
-		vec2i pos(e.mouseButton.x, e.mouseButton.y);
-		bool wincontained = winarea.contains(pos.x, pos.y);
-
-		for(auto& pair : buttons) {
-			auto& bi = pair.second;
-
-			bool contained = wincontained && bi.b.contains(pos);
-			if(bi.condition == state::persist && contained) {
-				this->transition(pair.first, state::active);
-			} else if(bi.condition == state::active && !contained) {
-				this->transition(pair.first, state::persist);
-			}
-
-			if(bi.condition == state::persist) {
-				this->transition(pair.first, state::idle);
-			} else if(bi.condition == state::active) {
-				this->transition(pair.first, state::hover);
-			}
-		}
-	} else if(e.type == sf::Event::LostFocus) {
-		/*
-		 * O <- o
-		 * ^
-		 * o <- o
-		 */
-		for(auto& pair : buttons) {
-			auto& bi = pair.second;
-
-			if(bi.condition != state::idle) {
-				this->transition(pair.first, state::idle);
-			}
-		}
-	} else if(e.type == sf::Event::MouseLeft) {
-		/*
-		 * O <- o
-		 *
-		 * O <- o
-		 */
-		for(auto& pair : buttons) {
-			auto& bi = pair.second;
-
-			if(bi.condition == state::hover) {
-				this->transition(pair.first, state::idle);
-			}
-			if(bi.condition == state::active) {
-				this->transition(pair.first, state::persist);
-			}
-		}
+{
+	for(auto&& pair : buttons) {
+		auto& button = pair.second;
+		button.process(e);
 	}
-} // }}}
+}
 
 // }}}
