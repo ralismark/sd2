@@ -55,6 +55,17 @@ configure_file(
 	"${PROJECT_BINARY_DIR}/h/config.hpp"
 )
 
+# sfml
+find_library(LIB_SFML_AUDIO sfml-audio)
+find_library(LIB_SFML_GRAPHICS sfml-graphics)
+find_library(LIB_SFML_NETWORK sfml-network)
+find_library(LIB_SFML_SYSTEM sfml-system)
+find_library(LIB_SFML_WINDOW sfml-window)
+add_library(sfml INTERFACE)
+target_link_libraries(sfml INTERFACE
+		${LIB_SFML_AUDIO} ${LIB_SFML_GRAPHICS} ${LIB_SFML_NETWORK} ${LIB_SFML_SYSTEM} ${LIB_SFML_WINDOW}
+	)
+
 # entityx
 set(ENTITYX_BUILD_SHARED false CACHE BOOL "" FORCE)
 set(ENTITYX_BUILD_TESTING false CACHE BOOL "" FORCE)
@@ -74,6 +85,7 @@ add_subdirectory(export)
 
 add_library(runtime INTERFACE)
 target_link_libraries(runtime INTERFACE core disp input res)
+target_link_libraries(runtime INTERFACE sfml)
 
 # source
 
@@ -103,6 +115,7 @@ add_executable(evtest evtest.cpp)
 target_link_libraries(evtest runtime)
 
 add_executable(all_check all.cpp)
+target_link_libraries(all_check sfml)
 
 add_executable(sort sort.cpp)
 target_link_libraries(sort -subsystem:windows -entry:mainCRTStartup)
