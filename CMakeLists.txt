@@ -123,10 +123,7 @@ target_link_libraries(sort resource)
 target_link_libraries(sort runtime)
 
 add_executable(stars stars.cpp)
-target_link_libraries(stars -subsystem:windows -entry:mainCRTStartup)
-target_link_libraries(stars runtime)
+target_link_libraries(stars runtime entityx)
 
-add_executable(estars entity.cpp)
-target_link_libraries(estars runtime entityx)
 
 
