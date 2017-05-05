@@ -127,3 +127,8 @@ target_link_libraries(stars runtime entityx)
 
 
 
+add_executable(pong examples/pong.cpp)
+target_link_libraries(pong runtime entityx res0)
+
+add_executable(chip8 examples/chip8.cpp)
+target_link_libraries(chip8 runtime)
