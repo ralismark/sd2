@@ -1,140 +1,136 @@
 #include "core/runtime.cpp"
+#include "include/fmt.hpp"
 #include "include/randutils.hpp"
 #include "include/vector.hpp"
-#include "include/win32.hpp"
 
+#include <entityx/entityx.h>
 #include <sfml/graphics.hpp>
 
-#include <vector>
+randutils::mt19937_rng rng;
 
-constexpr size_t star_count = 1000;
-constexpr double max_z = 100;
+namespace cfg {
 
-namespace central {
+	double time_scale = 10.0;
+	double colour_scale = 10.0;
 
-	randutils::mt19937_rng rng;
+}
 
-	struct star_point {
-		vec3 pos;
-		sf::RectangleShape shape;
+vec3 reposition()
+{
+	auto extent = stdwin.winsize;
 
-		star_point()
-			: pos(), shape()
-		{
-			shape.setOrigin(float(-stdwin.winsize.x / 2), float(-stdwin.winsize.y / 2));
-			shape.setSize(sf::Vector2f(1, 1));
+	vec3 pos;
+	pos.x = rng.variate<double, std::normal_distribution>(0, extent.x);
+	pos.y = rng.variate<double, std::normal_distribution>(0, extent.y);
+	pos.z = rng.uniform(0.0, 100.0);
 
-			this->reposition();
-			this->update_shape();
-		}
+	return pos;
+}
 
-		void reposition()
-		{
-			auto extent = stdwin.winsize;
-
-			pos.x = rng.variate<double, std::normal_distribution>(0, extent.x);
-			pos.y = rng.variate<double, std::normal_distribution>(0, extent.y);
-			pos.z = rng.uniform(0.0, max_z);
-		}
-
-		void update_shape()
-		{
-			auto value = (unsigned char)((pos.z > max_z ? 0 : (1 - (pos.z / max_z))) * 255);
-			shape.setFillColor(sf::Color(value, value, value));
-
-			vec2 view_pos(10 * pos.x / pos.z, 10 * pos.y / pos.z);
-			shape.setPosition(float(view_pos.x), float(view_pos.y));
-		}
-	};
-
-	std::vector<star_point> stars;
-
-	void update()
+struct move_sys
+	: public entityx::System<move_sys>
+{
+	void update(entityx::EntityManager& es, entityx::EventManager &events, double dt)
 	{
-		for(auto& star : stars) {
-			// move
-			if((star.pos.z -= 1.0) < 0) {
-				star.reposition();
-			}
-
-			star.update_shape();
-		}
+		es.each<vec3>([dt] (entityx::Entity e, vec3& pos) {
+				pos.z -= 1 * dt;
+				if(pos.z < 0) {
+					pos = reposition();
+				}
+			});
 	}
+};
 
-	void render()
+struct render_sys
+	: public entityx::System<render_sys>
+{
+	void update(entityx::EntityManager& es, entityx::EventManager &events, double)
 	{
 		stdwin->clear(sf::Color::Black);
 
-		for(auto& star : stars) {
-			stdwin->draw(star.shape);
-		}
+		static sf::RectangleShape shape = [] {
+			sf::RectangleShape r;
+			r.setOrigin(float(-stdwin.winsize.x / 2), float(-stdwin.winsize.y / 2));
+			r.setSize(sf::Vector2f(1, 1));
+			return r;
+		}();
+
+		es.each<vec3>([&] (entityx::Entity e, vec3& pos) {
+				unsigned char value = static_cast<unsigned char>(255 * cfg::colour_scale / (pos.z + cfg::colour_scale));
+				shape.setFillColor(sf::Color(value, value, value));
+
+				vec2 view_pos = 10 * pos.xy / pos.z;
+				shape.setPosition(view_pos.x, view_pos.y);
+
+				stdwin->draw(shape);
+			});
 
 		stdwin->display();
 	}
+};
 
-	void var_init()
+struct level
+	: public entityx::EntityX
+{
+	void load()
 	{
-		stars.resize(star_count);
-	}
+		systems.add<move_sys>();
+		systems.add<render_sys>();
+		systems.configure();
 
-	void move_exit(const sf::Event& e)
-	{
-		if(rt::frame < 10) {
-			return;
-		}
-
-		switch(e.type) {
-		case sf::Event::KeyPressed:
-		case sf::Event::MouseMoved:
-		case sf::Event::MouseButtonPressed:
-		case sf::Event::MouseWheelMoved:
-		case sf::Event::MouseWheelScrolled:
-			// all of these close the program
-			rt::exit(0);
-			break;
-		default:
-			break; // do nothing
+		int star_count = 1000;
+		while(star_count --> 0) {
+			auto entity = entities.create();
+			entity.assign<vec3>(reposition());
 		}
 	}
 
-}
-
-vec2i get_monitor_size()
-{
-	return vec2i{GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN)};
-}
-
-bool is_screensaver()
-{
-	// based on extension
-	char fname[MAX_PATH + 1];
-	if(GetModuleFileName(nullptr, fname, MAX_PATH + 1) == 0) {
-		return false;
+	void update(double dt)
+	{
+		dt *= cfg::time_scale;
+		systems.update<move_sys>(dt);
+		systems.update<render_sys>(dt);
 	}
-	std::string fname_str = fname;
-	auto dot_place = fname_str.find_last_of('.');
-	if(dot_place == std::string::npos
-	   || dot_place == fname_str.size()
-	   || fname_str.substr(dot_place + 1) != "scr") {
-		return false;
-	}
-	return true;
-}
+};
+
+namespace var {
+
+	level world;
+	sf::Clock clock;
+
+} // namespace var
 
 void initial()
 {
-	rt::on_frame.connect(central::update, 20);
-	rt::on_frame.connect(central::render, 30);
+	rt::on_frame.connect([] {
+			auto elapsed = var::clock.restart();
+			var::world.update(elapsed.asSeconds());
+		});
 
-	if(rt::opt::a || is_screensaver()) {
-		rt::on_win_event.connect(central::move_exit);
+	var::world.load();
+	var::clock.restart();
 
-		stdwindow::winstyle = sf::Style::Fullscreen;
-		stdwindow::winsize = get_monitor_size();
+	auto parse_double = [] (const std::string& s) {
+		try {
+			size_t idx;
+			double ret = std::stod(s, &idx);
+			if(ret <= 0 || idx < s.size()) {
+				throw 0; // any type will do
+			}
+			return ret;
+		} catch(...) {
+			fmt::print("{}: {}: {}\n", rt::pgname, s, "invalid format");
+			rt::exit(1);
+		}
+		return 0.0;
+	};
 
-		stdwin.init();
-		stdwin->setMouseCursorVisible(false);
+	if(rt::opt::a) {
+		// a: the color multiplier
+		cfg::colour_scale = parse_double(*rt::opt::a);
 	}
 
-	central::var_init();
+	if(rt::opt::b) {
+		cfg::time_scale = parse_double(*rt::opt::b);
+	}
 }
