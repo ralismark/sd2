@@ -111,18 +111,18 @@ function(res_export libname)
 	target_link_libraries(${libname} ${libname}_res)
 endfunction()
 
-add_executable(evtest evtest.cpp)
+add_executable(evtest examples/evtest.cpp)
 target_link_libraries(evtest runtime)
 
 add_executable(all_check all.cpp)
 target_link_libraries(all_check sfml)
 
-add_executable(sort sort.cpp)
+add_executable(sort examples/sort.cpp)
 target_link_libraries(sort -subsystem:windows -entry:mainCRTStartup)
 target_link_libraries(sort resource)
 target_link_libraries(sort runtime)
 
-add_executable(stars stars.cpp)
+add_executable(stars examples/stars.cpp)
 target_link_libraries(stars runtime entityx)
 
 
