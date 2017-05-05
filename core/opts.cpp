@@ -170,6 +170,11 @@ program using this runtime, or may be ignored.
 			return parse_success;
 		}
 
+		int next_arg()
+		{
+			return optind;
+		}
+
 	} // namespace opt
 
 } // namespace rt

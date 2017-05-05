@@ -5,6 +5,7 @@
 #define NDEBUG 1
 #endif
 
+#include <vector>
 #include <sfml/window/event.hpp>
 
 #include "include/sigslots.hpp"
@@ -133,6 +134,15 @@ namespace rt {
 	extern int argc;
 	extern char** argv;
 	extern char* pgname;
+
+	/**
+	 * \var args
+	 * \brief arguments after options
+	 *
+	 * This vector contains the arguments to the program, excluding
+	 * options.
+	 */
+	extern std::vector<char*> args;
 
 } // namespace rt
 

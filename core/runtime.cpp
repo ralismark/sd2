@@ -31,6 +31,8 @@ namespace rt {
 	char** argv;
 	char* pgname;
 
+	std::vector<char*> args;
+
 } // namespace rt
 
 int main(int argc, char** argv) try
@@ -45,6 +47,7 @@ int main(int argc, char** argv) try
 	} else if(opt_parse_result == rt::opt::parse_fail) {
 		return 1;
 	}
+	rt::args.assign(argv + rt::opt::next_arg(), argv + argc);
 
 	stdwindow::winstyle = rt::opt::wstyle;
 	stdwindow::winfps = rt::opt::wfps.value_or(0);
