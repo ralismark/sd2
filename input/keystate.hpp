@@ -26,6 +26,8 @@ private: // variables
 public: // methods
 
 	keystate(key_type kcode = key_type::Unknown);
+
+	key_type get_key() const;
 	void rebind(key_type kcode = key_type::Unknown);
 
 	bool pressed() const;

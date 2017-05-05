@@ -7,6 +7,11 @@ keystate::keystate(key_type kcode)
 {
 }
 
+keystate::key_type keystate::get_key() const
+{
+	return key;
+}
+
 void keystate::rebind(key_type kcode)
 {
 	key = kcode;
