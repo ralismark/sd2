@@ -43,6 +43,15 @@ namespace rt {
 		 */
 		opt_result parse(int argc, char** argv);
 
+		/**
+		 * \fn next_opt
+		 * \brief get index of next argument
+		 *
+		 * This returns optind, which is the index of the next
+		 * non-option argument.
+		 */
+		int next_arg();
+
 	} // namespace opt
 
 } // namespace rt
