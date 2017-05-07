@@ -2,6 +2,7 @@
 #pragma once
 
 #include <map>
+#include <list>
 
 #include <sfml/graphics/rect.hpp>
 #include <sfml/window/event.hpp>
@@ -15,6 +16,9 @@
  * This class contains a minimal set of members which are able to define a
  * button. This does not contain any functionality - that is provided by the
  * switchboard class.
+ *
+ * Each button is implemented as a finite state machine, the details can be
+ * seen below.
  */
 class button
 {
@@ -22,37 +26,6 @@ public: // statics
 
 	using dimension_type = int;
 	using vector_type = vector<int, 2>;
-
-public: // variables
-
-	sf::Rect<dimension_type> bound;
-	bool active;
-
-public: // methods
-
-	button();
-	button(const vector_type& pos, const vector_type& size);
-	button(const sf::Rect<dimension_type>& init_bound);
-
-	bool contains(const vector_type& pos) const;
-};
-
-/**
- * \class switchboard
- * \brief button manager
- *
- * This class contains a group of buttons, linked to their own ID's. A
- * switchboard also processes incoming events to allow reacting to specific
- * triggers (see below).
- *
- * Each button is implemented as a finite state machine, the details can be
- * seen below.
- */
-class switchboard
-{
-public: // statics
-
-	using id_type = int;
 
 	/*
 	 * The state of a button and the cursor can be represented as a state
@@ -73,9 +46,9 @@ public: // statics
 		hover_on, // idle -> hover
 		hover_off, // hover -> idle
 		press, // hover -> active
-		release, // press -> active
-		reenter, // persist -> active
+		release, // active -> hover
 		leave, // active -> persist
+		reenter, // persist -> active
 		away_release, // persist -> idle
 		// cannot happen: away_press, // idle -> persist
 	};
@@ -87,36 +60,24 @@ public: // statics
 	 * transitions, e.g. the mouse both moves and presses the button.
 	 */
 
-private: // internal statics
-
-	struct binfo {
-		button b;
-		state s;
-
-		void transition(state new_s);
-	};
-
 private: // variables
 
-	std::map<id_type, binfo> buttons;
+	sf::Rect<dimension_type> bound;
+	state condition;
 
-public: // statics
+public: // methods
 
-	// {{{ interface
+	button();
+	button(const vector_type& pos, const vector_type& size);
+	button(const sf::Rect<dimension_type>& init_bound);
 
-	bool exists(id_type id) const;
-	bool add(id_type id, button b);
-	void remove(id_type id);
+	bool contains(const vector_type& pos) const;
 
-	const button* get(id_type id) const;
-	button* get(id_type id);
+	state current_state() const;
+	sf::Rect<dimension_type> region() const;
+	// Note: This automatically sets the state to idle
+	std::list<event> region(sf::Rect<dimension_type> new_bound);
 
-	// also false if not present
-	bool is_active(id_type id) const;
-	void set_state(id_type id, bool active);
-
-	// }}}
-
-	void process(const sf::Event& e);
-
+	std::list<event> transition(state new_state);
+	std::list<event> process(const sf::Event& e);
 };

@@ -2,23 +2,25 @@
 
 #include "disp/window.hpp"
 
+#include <cassert>
+
 // class button {{{
 
 button::button()
 	: bound()
-	, active(false)
+	, condition(state::idle)
 {
 }
 
 button::button(const vector_type& pos, const vector_type& size)
 	: bound(pos.x, pos.y, size.x, size.y)
-	, active(false)
+	, condition(state::idle)
 {
 }
 
 button::button(const sf::Rect<dimension_type>& init_bound)
 	: bound(init_bound)
-	, active(false)
+	, condition(state::idle)
 {
 }
 
@@ -27,99 +29,54 @@ bool button::contains(const vector_type& pos) const
 	return bound.contains(pos.x, pos.y);
 }
 
-// }}}
-
-// class switchboard {{{
-
-// struct binfo {{{
-
-void switchboard::binfo::transition(state new_s)
+button::state button::current_state() const
 {
-	if(new_s == s) {
-		return; // not a transition
-	}
-
-	// ensure only valid transitions happen
-	// this is done through defined intermediary steps
-	// then the main transition takes place
-
-	/*  */ if(s == state::idle && new_s == state::active) {
-		this->transition(state::hover);
-	} else if(s == state::idle && new_s == state::persist) {
-		this->transition(state::hover);
-		this->transition(state::active);
-	} else if(s == state::hover && new_s == state::persist) {
-		this->transition(state::active);
-	} else if(s == state::active && new_s == state::idle) {
-		this->transition(state::persist);
-	} else if(s == state::persist && new_s == state::hover) {
-		this->transition(state::active);
-	}
-
-	s = new_s;
+	return condition;
 }
 
-// }}}
-
-bool switchboard::exists(id_type id) const
+sf::Rect<button::dimension_type> button::region() const
 {
-	return buttons.count(id) > 0;
+	return bound;
 }
 
-bool switchboard::add(id_type id, button b)
+std::list<button::event> button::region(sf::Rect<dimension_type> new_bound)
 {
-	if(this->exists(id)) {
-		// id exists
-		buttons[id] = binfo{std::move(b), state::idle};
-		return false;
-	} else {
-		// new id
-		buttons.emplace(id, binfo{std::move(b), state::idle});
-		return true;
-	}
+	bound = new_bound;
+	return this->transition(state::idle);
 }
 
-void switchboard::remove(id_type id)
+std::list<button::event> button::transition(state new_state)
 {
-	buttons.erase(id);
+	using event_table = std::map<std::pair<state, state>, std::list<button::event>>;
+	static const event_table transitions = {
+		/*   state from      state to           triggered events */
+		{ { state::idle,    state::idle    }, { /* none*/                                   } },
+		{ { state::idle,    state::hover   }, { event::hover_on                             } },
+		{ { state::idle,    state::active  }, { event::hover_on, event::press               } },
+		{ { state::idle,    state::persist }, { event::hover_on, event::press, event::leave } },
+		{ { state::hover,   state::idle    }, { event::hover_off                            } },
+		{ { state::hover,   state::hover   }, { /* none*/                                   } },
+		{ { state::hover,   state::active  }, { event::press                                } },
+		{ { state::hover,   state::persist }, { event::press, event::leave                  } },
+		{ { state::active,  state::idle    }, { event::leave, event::away_release           } },
+		{ { state::active,  state::hover   }, { event::release                              } },
+		{ { state::active,  state::active  }, { /* none*/                                   } },
+		{ { state::active,  state::persist }, { event::leave                                } },
+		{ { state::persist, state::idle    }, { event::away_release                         } },
+		{ { state::persist, state::hover   }, { event::reenter, event::release              } },
+		{ { state::persist, state::active  }, { event::reenter                              } },
+		{ { state::persist, state::persist }, { /* none*/                                   } }
+	};
+
+	auto change_pair = std::make_pair(condition, new_state);
+	auto events = transitions.find(change_pair);
+	assert(events != transitions.end() && "Transition not valid, invalid enum values?");
+
+	condition = new_state;
+	return events->second;
 }
 
-const button* switchboard::get(id_type id) const
-{
-	auto it = buttons.find(id);
-	if(it != buttons.end()) {
-		return &it->second.b;
-	} else {
-		return nullptr;
-	}
-}
-
-button* switchboard::get(id_type id)
-{
-	// non-const based on const impl
-	const switchboard* cthis = this;
-	auto const_out = cthis->get(id);
-	return const_cast<button*>(const_out);
-}
-
-// also false if not present
-bool switchboard::is_active(id_type id) const
-{
-	if(!this->exists(id)) {
-		return false;
-	}
-	return this->get(id)->active;
-}
-
-void switchboard::set_state(id_type id, bool active)
-{
-	if(this->exists(id)) {
-		buttons[id].b.active = active;
-		buttons[id].transition(state::idle); // either mode must begin from idle
-	}
-}
-
-void switchboard::process(const sf::Event& e)
+std::list<button::event> button::process(const sf::Event& e)
 { // {{{
 	/*
 	 * possible transition are displayed in a diagram
@@ -142,28 +99,21 @@ void switchboard::process(const sf::Event& e)
 		 */
 		// only trigger if has focus
 		if(!stdwin->hasFocus()) {
-			return;
+			return {};
 		}
 
 		vec2i pos(e.mouseMove.x, e.mouseMove.y);
-		bool wincontained = winarea.contains(pos.x, pos.y);
+		bool wincontained = winarea.contains(pos);
+		bool contained = wincontained && this->contains(pos);
 
-		for(auto& pair : buttons) {
-			auto& bi = pair.second;
-			if(!bi.b.active) {
-				continue;
-			}
-
-			bool contained = wincontained && bi.b.contains(pos);
-			if(bi.s == state::idle && contained) {
-				bi.transition(state::hover);
-			} else if(bi.s == state::hover && !contained) {
-				bi.transition(state::idle);
-			} else if(bi.s == state::active && !contained) {
-				bi.transition(state::persist);
-			} else if(bi.s == state::persist && contained) {
-				bi.transition(state::active);
-			}
+		if(condition == state::idle && contained) {
+			return this->transition(state::hover);
+		} else if(condition == state::hover && !contained) {
+			return this->transition(state::idle);
+		} else if(condition == state::active && !contained) {
+			return this->transition(state::persist);
+		} else if(condition == state::persist && contained) {
+			return this->transition(state::active);
 		}
 	} else if(e.type == sf::Event::MouseButtonPressed) {
 		/*
@@ -172,22 +122,15 @@ void switchboard::process(const sf::Event& e)
 		 * o    O
 		 */
 		if(e.mouseButton.button != sf::Mouse::Left) {
-			return;
+			return {};
 		}
-		// a press requires focus - we don't care
+		// a press requires focus - we don't care otherwise
 		vec2i pos(e.mouseButton.x, e.mouseButton.y);
-		bool wincontained = winarea.contains(pos.x, pos.y);
+		bool wincontained = winarea.contains(pos);
+		bool contained = wincontained && this->contains(pos);
 
-		for(auto& pair : buttons) {
-			auto& bi = pair.second;
-			if(!bi.b.active) {
-				continue;
-			}
-
-			bool contained = wincontained && bi.b.contains(pos);
-			if(contained) {
-				bi.transition(state::active);
-			}
+		if(contained) {
+			return this->transition(state::active);
 		}
 	} else if(e.type == sf::Event::MouseButtonReleased) {
 		/*
@@ -196,47 +139,38 @@ void switchboard::process(const sf::Event& e)
 		 * o <> o
 		 */
 		if(e.mouseButton.button != sf::Mouse::Left) {
-			return;
+			return {};
 		}
 		// note: this event may not trigger if focus is lost
 
 		vec2i pos(e.mouseButton.x, e.mouseButton.y);
-		bool wincontained = winarea.contains(pos.x, pos.y);
+		bool wincontained = winarea.contains(pos);
+		bool contained = wincontained && this->contains(pos);
 
-		for(auto& pair : buttons) {
-			auto& bi = pair.second;
-			if(!bi.b.active) {
-				continue;
-			}
+		std::list<event> out;
 
-			bool contained = wincontained && bi.b.contains(pos);
-			if(bi.s == state::persist && contained) {
-				bi.transition(state::active);
-			} else if(bi.s == state::active && !contained) {
-				bi.transition(state::persist);
-			}
-
-			if(bi.s == state::persist) {
-				bi.transition(state::idle);
-			} else if(bi.s == state::active) {
-				bi.transition(state::hover);
-			}
+		if(condition == state::persist && contained) {
+			out = this->transition(state::active);
+		} else if(condition == state::active && !contained) {
+			out = this->transition(state::persist);
 		}
+
+		if(condition == state::persist) {
+			auto steps = this->transition(state::idle);
+			out.splice(out.end(), std::move(steps));
+		} else if(condition == state::active) {
+			auto steps = this->transition(state::hover);
+			out.splice(out.end(), std::move(steps));
+		}
+		return out;
 	} else if(e.type == sf::Event::LostFocus) {
 		/*
 		 * O <- o
 		 * ^
 		 * o <- o
 		 */
-		for(auto& pair : buttons) {
-			auto& bi = pair.second;
-			if(!bi.b.active) {
-				continue;
-			}
-
-			if(bi.s != state::idle) {
-				bi.transition(state::idle);
-			}
+		if(condition != state::idle) {
+			return this->transition(state::idle);
 		}
 	} else if(e.type == sf::Event::MouseLeft) {
 		/*
@@ -244,20 +178,13 @@ void switchboard::process(const sf::Event& e)
 		 *
 		 * O <- o
 		 */
-		for(auto& pair : buttons) {
-			auto& bi = pair.second;
-			if(!bi.b.active) {
-				continue;
-			}
-
-			if(bi.s == state::hover) {
-				bi.transition(state::idle);
-			}
-			if(bi.s == state::active) {
-				bi.transition(state::persist);
-			}
+		if(condition == state::hover) {
+			return this->transition(state::idle);
+		} else if(condition == state::active) {
+			return this->transition(state::persist);
 		}
 	}
+	return {};
 } // }}}
 
 // }}}
