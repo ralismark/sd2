@@ -130,7 +130,7 @@ std::list<button::event> button::process(const sf::Event& e)
 		bool contained = wincontained && this->contains(pos);
 
 		if(contained) {
-			return this->transition(pair.first, state::active);
+			return this->transition(state::active);
 		}
 	} else if(e.type == sf::Event::MouseButtonReleased) {
 		/*
@@ -147,19 +147,19 @@ std::list<button::event> button::process(const sf::Event& e)
 		bool wincontained = winarea.contains(pos);
 		bool contained = wincontained && this->contains(pos);
 
-		std::list out;
+		std::list<event> out;
 
-		if(bi.condition == state::persist && contained) {
-			out = this->transition(pair.first, state::active);
-		} else if(bi.condition == state::active && !contained) {
-			out = this->transition(pair.first, state::persist);
+		if(condition == state::persist && contained) {
+			out = this->transition(state::active);
+		} else if(condition == state::active && !contained) {
+			out = this->transition(state::persist);
 		}
 
-		if(bi.condition == state::persist) {
-			auto steps = this->transition(pair.first, state::idle);
+		if(condition == state::persist) {
+			auto steps = this->transition(state::idle);
 			out.splice(out.end(), std::move(steps));
-		} else if(bi.condition == state::active) {
-			auto steps = this->transition(pair.first, state::hover);
+		} else if(condition == state::active) {
+			auto steps = this->transition(state::hover);
 			out.splice(out.end(), std::move(steps));
 		}
 		return out;
@@ -169,8 +169,8 @@ std::list<button::event> button::process(const sf::Event& e)
 		 * ^
 		 * o <- o
 		 */
-		if(bi.condition != state::idle) {
-			return this->transition(pair.first, state::idle);
+		if(condition != state::idle) {
+			return this->transition(state::idle);
 		}
 	} else if(e.type == sf::Event::MouseLeft) {
 		/*
@@ -178,10 +178,10 @@ std::list<button::event> button::process(const sf::Event& e)
 		 *
 		 * O <- o
 		 */
-		if(bi.condition == state::hover) {
-			return this->transition(pair.first, state::idle);
-		} else if(bi.condition == state::active) {
-			return this->transition(pair.first, state::persist);
+		if(condition == state::hover) {
+			return this->transition(state::idle);
+		} else if(condition == state::active) {
+			return this->transition(state::persist);
 		}
 	}
 	return {};
