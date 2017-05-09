@@ -3,6 +3,7 @@
 #include <iostream>
 #include <typeinfo>
 
+#include "core/time.hpp"
 #include "core/event.hpp"
 #include "core/opts.hpp"
 #include "disp/window.hpp"
@@ -62,6 +63,9 @@ int main(int argc, char** argv) try
 
 		while(stdwin) {
 			try {
+				// frame time, see time.hpp
+				rt::frame_now = rt::clock::now();
+
 				// event loop, see event.hpp for details on event_queue
 				for(auto&& event : event_queue(stdwin)) {
 					rt::on_win_event(event);
@@ -74,6 +78,9 @@ int main(int argc, char** argv) try
 						rt::exit(0);
 					}
 				}
+				// delayed execution, see time.hpp
+				rt::exec_step();
+
 				rt::on_frame();
 
 				++rt::frame;
