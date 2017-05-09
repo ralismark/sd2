@@ -8,10 +8,10 @@ namespace { // anonymous
 
 	struct exec_store
 	{
-		clock::time_point when;
+		rt::clock::time_point when;
 		std::function<void()> fn;
 	public:
-		exec_store(clock::time_point init_when, std::function<void()> init_fn)
+		exec_store(rt::clock::time_point init_when, std::function<void()> init_fn)
 			: when(init_when), fn(init_fn)
 		{
 		}
@@ -29,7 +29,7 @@ namespace { // anonymous
 
 namespace rt {
 
-	clock::time_point frame_now;
+	clock::time_point frame_now{};
 
 	void exec_at(clock::time_point when, std::function<void()> fn)
 	{
