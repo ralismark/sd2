@@ -12,10 +12,6 @@
  *       library from them), but ensures that all files are checked.
  */
 
-#ifndef EXPORTS
-	#define EXPORTS 1 // for export/resource
-#endif
-
 // source
 #ifdef INCLUDE_SOURCE
 
@@ -24,8 +20,6 @@
 	#include "core/runtime.cpp"
 
 	#include "disp/window.cpp"
-
-	#include "export/resource.cpp"
 
 	#include "input/button.cpp"
 	#include "input/keystate.cpp"
@@ -42,8 +36,6 @@
 #include "core/runtime.hpp"
 
 #include "disp/window.hpp"
-
-#include "export/resource.hpp"
 
 #include "include/fmt.hpp"
 #include "include/optional.hpp"
