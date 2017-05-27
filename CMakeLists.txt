@@ -79,7 +79,6 @@ add_subdirectory(core)
 add_subdirectory(disp)
 add_subdirectory(input)
 add_subdirectory(res)
-add_subdirectory(export)
 
 # runtime
 
@@ -119,13 +118,12 @@ target_link_libraries(all_check sfml)
 
 add_executable(sort examples/sort.cpp)
 target_link_libraries(sort -subsystem:windows -entry:mainCRTStartup)
-target_link_libraries(sort resource)
-target_link_libraries(sort runtime)
+target_link_libraries(sort runtime res0)
 
 add_executable(stars examples/stars.cpp)
 target_link_libraries(stars runtime entityx)
 
-
+res_export(res0 ${PROJECT_SOURCE_DIR}/store/monofonto.ttf ${PROJECT_SOURCE_DIR}/store/knight.png)
 
 add_executable(pong examples/pong.cpp)
 target_link_libraries(pong runtime entityx res0)

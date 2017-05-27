@@ -1,7 +1,6 @@
 #include "core/runtime.cpp"
 #include "include/randutils.hpp"
-
-#include "export/resource.hpp"
+#include "res0.hpp"
 
 #include <sfml/graphics.hpp>
 
@@ -366,7 +365,7 @@ namespace central {
 
 	void var_init()
 	{
-		if(!proggy_clean.loadFromMemory(res_proggyclean_ttf, sizeof(res_proggyclean_ttf))) {
+		if(!proggy_clean.loadFromMemory(store::monofonto_ttf.get(), store::monofonto_ttf.size())) {
 			rt::exit(1);
 		}
 		header.setFont(proggy_clean);
