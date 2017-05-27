@@ -9,16 +9,22 @@
  * all headers are included twice to check for include guards.
  *
  * Note: Including the implementation may not be necessary (since we generate a
- *       library from them), but ensures that all files are checked.
+ *       library from them), but ensures that all files are checked. However,
+ *       files with exported variables (e.g. core/runtime.cpp, which exports
+ *       rt::frame) must be included (as no libraries are linked)
  */
 
 // source
 #ifdef INCLUDE_SOURCE
 
+	#include "core/delay.cpp"
 	#include "core/event.cpp"
+	#include "core/math_constants.cpp"
 	#include "core/opts.cpp"
 	#include "core/runtime.cpp"
+	#include "core/time.cpp"
 
+	#include "disp/line.cpp"
 	#include "disp/window.cpp"
 
 	#include "input/button.cpp"
@@ -31,10 +37,14 @@
 #endif
 
 // headers
+#include "core/delay.hpp"
 #include "core/event.hpp"
+#include "core/math_constants.hpp"
 #include "core/opts.hpp"
 #include "core/runtime.hpp"
+#include "core/time.hpp"
 
+#include "disp/line.hpp"
 #include "disp/window.hpp"
 
 #include "include/fmt.hpp"
@@ -71,7 +81,7 @@
 #ifndef REPEAT_RUN
 	#define REPEAT_RUN 1
 
-	#include __FILE__
+	#include "all.cpp"
 
 #endif
 
