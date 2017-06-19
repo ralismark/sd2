@@ -2,8 +2,8 @@
 #include "include/fmt.hpp"
 #include "include/randutils.hpp"
 #include "include/vector.hpp"
+#include "include/entityx.hpp"
 
-#include <entityx/entityx.h>
 #include <sfml/graphics.hpp>
 
 randutils::mt19937_rng rng;
