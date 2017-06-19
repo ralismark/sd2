@@ -3,11 +3,10 @@
 #include "input/keystate.hpp"
 #include "include/randutils.hpp"
 #include "include/fmt.hpp"
+#include "include/entityx.hpp"
 #include "res0.hpp"
 
 #include <sfml/graphics.hpp>
-#include <entityx/entityx.h>
-#include <entityx/Event.h>
 
 #include <string>
 #include <numeric>
