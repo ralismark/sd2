@@ -14,7 +14,7 @@
 #include <numeric>
 #include <variant>
 
-constexpr int data_size = 100;
+constexpr int data_size = 3000;
 constexpr int data_max = data_size;
 
 template <typename Iter>
@@ -68,12 +68,30 @@ std::string get_name(method m)
 
 int parallel_limit()
 {
-	return -1;
+	return 99;
 	auto lim = std::thread::hardware_concurrency() - 1;
 	if(lim == 0) {
 		return (1 << 3) - 1;
 	}
 	return lim;
+}
+
+std::atomic<int> parallel_counter = 0;
+
+template <typename F1, typename F2>
+void run_parallel(F1&& f1, F2&& f2)
+{
+	if(parallel_counter < parallel_limit()) {
+		++parallel_counter;
+		auto task = std::async([f1] {
+				f1();
+				--parallel_counter;
+			});
+		f2();
+	} else {
+		f1();
+		f2();
+	}
 }
 
 method get_current_method();
@@ -395,7 +413,7 @@ namespace central {
 namespace salgo { // {{{
 
 	template <typename Iter>
-	void bitonicmerge(Iter first, Iter last, bool dir, int depth = 0)
+	void bitonicmerge(Iter first, Iter last, bool dir)
 	{
 		auto dist = last - first;
 		if(dist <= 1) {
@@ -418,18 +436,15 @@ namespace salgo { // {{{
 			}
 		}
 
-		if((1 << depth) < parallel_limit()) {
-			auto task = std::async(std::launch::async, bitonicmerge<Iter>, first, mid, dir, depth + 1);
-			bitonicmerge(mid, last, dir, depth + 1);
-			task.wait();
-		} else {
-			bitonicmerge(first, mid, dir, depth + 1);
-			bitonicmerge(mid, last, dir, depth + 1);
-		}
+		run_parallel([&] {
+				bitonicmerge(first, mid, dir);
+			}, [&] {
+				bitonicmerge(mid, last, dir);
+			});
 	}
 
 	template <typename Iter>
-	void bitonicsort(Iter first, Iter last, bool dir = true, int depth = 0)
+	void bitonicsort(Iter first, Iter last, bool dir = true)
 	{
 		auto dist = last - first;
 		if(dist <= 1) {
@@ -437,20 +452,17 @@ namespace salgo { // {{{
 		}
 		auto mid = first + (dist / 2);
 
-		if((1 << depth) < parallel_limit()) {
-			auto task = std::async(std::launch::async, bitonicsort<Iter>, first, mid, !dir, depth + 1);
-			bitonicsort(mid, last, dir, depth + 1);
-			task.wait();
-		} else {
-			bitonicsort(first, mid, !dir, depth + 1);
-			bitonicsort(mid, last, dir, depth + 1);
-		}
+		run_parallel([&] {
+				bitonicsort(first, mid, !dir);
+			}, [&] {
+				bitonicsort(mid, last, dir);
+			});
 
-		bitonicmerge(first, last, dir, depth);
+		bitonicmerge(first, last, dir);
 	}
 
 	template<class Iter>
-	void mergesort(Iter first, Iter last, int depth = 0)
+	void mergesort(Iter first, Iter last)
 	{
 		auto dist = last - first;
 		if(dist <= 1) {
@@ -458,20 +470,17 @@ namespace salgo { // {{{
 		}
 		Iter middle = first + dist / 2;
 
-		if((1 << depth) < parallel_limit()) {
-			auto task = std::async(std::launch::async, mergesort<Iter>, first, middle, depth + 1);
-			mergesort(middle, last, depth + 1);
-			task.wait();
-		} else {
-			mergesort(first, middle, depth + 1);
-			mergesort(middle, last, depth + 1);
-		}
+		run_parallel([&] {
+				mergesort(first, middle);
+			}, [&] {
+				mergesort(middle, last);
+			});
 
 		std::inplace_merge(first, middle, last);
 	}
 
 	template <typename Iter>
-	void quicksort(Iter first, Iter last, int depth = 0)
+	void quicksort(Iter first, Iter last)
 	{
 		if(first == last) {
 			return;
@@ -482,14 +491,11 @@ namespace salgo { // {{{
 		auto partpoint = std::partition(first, pivot_point, [&](const auto& e) { return e <= pivot; });
 		std::iter_swap(pivot_point, partpoint);
 
-		if((1 << depth) < parallel_limit()) {
-			auto task = std::async(std::launch::async, quicksort<Iter>, first, partpoint, depth + 1);
-			quicksort(partpoint + 1, last, depth + 1);
-			task.wait();
-		} else {
-			quicksort(first, partpoint, depth + 1);
-			quicksort(partpoint + 1, last, depth + 1);
-		}
+		run_parallel([&] {
+				quicksort(first, partpoint);
+			}, [&] {
+				quicksort(partpoint + 1, last);
+			});
 	}
 
 	template <typename Iter>
@@ -565,12 +571,18 @@ namespace salgo { // {{{
 } // }}}
 
 static constexpr method selected_sorts[] = {
+	// method::bubblesort,
+	method::bitonicsort,
+	method::quicksort,
+	method::mergesort,
+	method::merge2sort,
 	method::std_sort,
 	method::std_stable_sort,
 	method::heapsort,
-	method::quicksort,
-	method::mergesort,
-	method::bitonicsort
+	// method::halfsort,
+	method::insertionsort,
+	// method::permute,
+	// method::shuffle,
 	};
 int algo_method = 0;
 

@@ -12,7 +12,6 @@
 #include <cassert>
 #include <cstdint>
 
-#include <chrono_io>
 #include <sfml/Graphics/RectangleShape.hpp>
 
 #include "include/vector.hpp"
@@ -511,8 +510,8 @@ public: // methods
 		}
 		fmt::print("\nI: {:04x} ", I);
 		fmt::print("PC: {:04x} [{:04x}]\n", ip, byte_concat({ mem[ip], mem[ip + 1] }));
-		std::cout << std::chrono::duration_fmt(std::chrono::symbol)
-			<< "delay: " << delay_timer << " (" << std::to_string(std::chrono::duration_cast<virtual_ticks>(delay_timer).count()) << "t) \n";
+		// std::cout << std::chrono::duration_fmt(std::chrono::symbol)
+		// 	<< "delay: " << delay_timer << " (" << std::to_string(std::chrono::duration_cast<virtual_ticks>(delay_timer).count()) << "t) \n";
 	}
 
 	void draw()
