@@ -62,7 +62,6 @@
 #include "res/dllport.hpp"
 #include "res/memblk.hpp"
 #include "res/memfile.hpp"
-#include "res/resource.hpp"
 
 // invert INCLUDE_SOURCE
 #ifdef INCLUDE_SOURCE
