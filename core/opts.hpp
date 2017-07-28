@@ -8,6 +8,15 @@
 
 namespace rt {
 
+	/**
+	 * \namespace opt
+	 * \brief non-generic argument parser
+	 *
+	 * The argument parser here is not generic, only parsing values for the
+	 * variables below. This should not be used directly, but instead
+	 * through runtime.hpp.
+	 */
+
 	namespace opt {
 
 		/**
