@@ -1,6 +1,9 @@
 /* -*- cpp.doxygen -*- */
 #pragma once
 
+#include <sfml/window/event.hpp>
+#include "disp/window.hpp"
+
 /**
  * \file
  * \brief SFML Window event loop helpers
@@ -9,9 +12,6 @@
  * a simpler interface for the event loop. Additionally, it allows the use of
  * range-for loops to loop over pending events.
  */
-
-#include <sfml/window/event.hpp>
-#include "disp/window.hpp"
 
 /**
  * \class event_iterator

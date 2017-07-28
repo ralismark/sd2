@@ -8,8 +8,6 @@
 
 namespace res {
 
-	// class ro_memfile {{{
-
 	ro_memfile::ro_memfile()
 		: file(nullptr), mapping(nullptr), view(nullptr), file_size(0)
 	{
@@ -118,7 +116,5 @@ namespace res {
 	{
 		return file_size;
 	}
-
-	// }}}
 
 } // namespace res
