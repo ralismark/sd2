@@ -73,7 +73,9 @@ R"(#pragma once
 
 namespace store {{
 
-)", use_memfile ? "memfile.hpp" : "memblk.hpp");
+	using resource_type = {};
+
+)", use_memfile ? "memfile.hpp" : "memblk.hpp", use_memfile ? "res::ro_memfile" : "res::ro_memblk");
 
 	if(use_memfile) {
 		output_using_memfile(argc - 4, argv + 4);
