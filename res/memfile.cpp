@@ -2,8 +2,8 @@
 
 #include <cassert>
 #include <memory>
+#include <system_error>
 
-#include "except.hpp"
 #include "include/win32.hpp"
 
 namespace res {
@@ -21,7 +21,7 @@ namespace res {
 		std::error_code ec;
 		if(!this->open(filename, ec)) {
 			assert(ec && "error code should not be clear");
-			throw res::unavailable(ec.message());
+			throw std::system_error(ec);
 		}
 
 		assert(!ec && "success should have clear exit code");
@@ -111,9 +111,6 @@ namespace res {
 
 	const void* ro_memfile::get() const
 	{
-		if(!this->is_open()) {
-			throw res::unavailable("resource not loaded");
-		}
 		return view;
 	}
 

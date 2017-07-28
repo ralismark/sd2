@@ -30,7 +30,6 @@
 	#include "input/button.cpp"
 	#include "input/keystate.cpp"
 
-	#include "res/except.cpp"
 	#include "res/memblk.cpp"
 	#include "res/memfile.cpp"
 
@@ -61,7 +60,6 @@
 #include "input/keystate.hpp"
 
 #include "res/dllport.hpp"
-#include "res/except.hpp"
 #include "res/memblk.hpp"
 #include "res/memfile.hpp"
 #include "res/resource.hpp"
