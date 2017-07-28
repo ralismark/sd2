@@ -2,8 +2,6 @@
 
 namespace res {
 
-	// class ro_memblk {{{
-
 	ro_memblk::ro_memblk()
 		: address(nullptr), blk_size(0)
 	{
@@ -41,7 +39,5 @@ namespace res {
 	{
 		return blk_size;
 	}
-
-	// }}}
 
 } // namespace res
