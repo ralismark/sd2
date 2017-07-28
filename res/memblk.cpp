@@ -1,7 +1,5 @@
 #include "memblk.hpp"
 
-#include "except.hpp"
-
 namespace res {
 
 	// class ro_memblk {{{
@@ -36,9 +34,6 @@ namespace res {
 
 	const void* ro_memblk::get() const
 	{
-		if(!this->is_open()) {
-			throw res::unavailable("resource not loaded");
-		}
 		return address;
 	}
 
