@@ -40,8 +40,11 @@ namespace rt {
 	delay_runner& delay_runner::also_over(clock::duration d, std::function<void(double)> fn)
 	{
 		auto looper = [start = this->when(), d, f = std::move(fn)] {
+			// floating point duration type, since normally it is integer
+			// ensures that division works correctly and does not truncate
 			using fp_duration = std::chrono::duration<double, clock::duration::period>;
 			auto progress = (frame_now - start) / fp_duration(d);
+			// ensures that progress is between 0 and 1
 			if(progress > 1) {
 				progress = 1;
 			} else if(progress < 0) {
