@@ -10,15 +10,38 @@
  * constant.
  */
 
+/**
+ * \namespace constant
+ * \brief Mathematical constants
+ *
+ * This namespace contains all functions that produce non-trivial mathematical
+ * constants to a great degree of accuracy.
+ */
+
 namespace constant {
 
-	// Pi, ratio of diameter to circumference
+	/**
+	 * \fn pi
+	 * \brief Pi, around 3.14159
+	 *
+	 * Returns Pi, the ratio of the diameter to the circumference in a circle.
+	 */
 	long double pi();
 
-	// E, natural constant
+	/**
+	 * \fn e
+	 * \brief E, around 2.71828
+	 *
+	 * Returns E (Euler's number), the natural constant
+	 */
 	long double e();
 
-	// Square root of 2, the number that is 2 when squared.
+	/**
+	 * \fn sqrt2
+	 * \brief Square root of 2, around 1.41421
+	 *
+	 * Returns the square root of 2, the number that becomes 2 when squared.
+	 */
 	long double sqrt2();
 
 } // namespace constant
