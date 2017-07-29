@@ -14,7 +14,7 @@
  * exec_step periodically.
  *
  * A nice wrapper around this interface is available through \ref
- * rt::delayed_runner in delay.hpp.
+ * rt::delay_runner in delay.hpp.
  */
 
 namespace rt {
