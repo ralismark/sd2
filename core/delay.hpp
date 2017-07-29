@@ -20,7 +20,7 @@ namespace rt {
 	 * with a delay. This is nicer wrapper around rt::exec_at and
 	 * rt::exec_until in time.hpp.
 	 *
-	 * Currently, issues arise from creating another instance of this class
+	 * \bug Currently, issues arise from using another instance of this class
 	 * while running a callback.
 	 */
 	struct delay_runner
@@ -32,28 +32,28 @@ namespace rt {
 		// used for the beginning of events with also_*
 		clock::time_point current_offset;
 	public:
+		/// Creates a runner, possibly with an extra offset
 		delay_runner(clock::duration offset = clock::duration::zero());
 
-		// returns the current offset time for events
+		/// Returns the current offset time for events
 		clock::time_point when() const;
 
-		// delays the current offset by d, and resettign the future
-		// offset
+		/// Delays the current offset by \p d, and resetting the future offset
 		delay_runner& delay(clock::duration d);
-		// resets the future offset
+		/// Resets the future offset
 		delay_runner& after();
 
-		// executes a function at a specific offset, ignoring
-		// future_offset
+		/// Executes a function at a specific offset, ignores future_offset
 		delay_runner& also_exec(std::function<void()> fn);
-		// same as also_exec, but occurs after future_offset
+		/// Same as #also_exec, but occurs after future_offset
 		delay_runner& exec(std::function<void()> fn);
 
-		// execute a function for every frame for given duration,
-		// ignoring future_offset this function is called with double
-		// specifying the progress (from 0 to 1)
+		/// Execute a function for every frame for given duration, ignores future_offset
+		///
+		/// This function is called with a \c double specifying the
+		/// progress (from 0 to 1)
 		delay_runner& also_over(clock::duration d, std::function<void(double)> fn);
-		// same as also_over, but occurs after future_offset
+		/// Same as #also_over, but occurs after future_offset
 		delay_runner& over(clock::duration d, std::function<void(double)> fn);
 	};
 
