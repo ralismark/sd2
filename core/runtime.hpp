@@ -171,7 +171,7 @@ namespace rt {
 void initial();
 
 /**
- * \fn main
+ * \fn main(int argc, char** argv)
  * \brief Main program
  *
  * This is defined by the runtime, and sets up several of its components. It
