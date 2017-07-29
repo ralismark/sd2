@@ -8,7 +8,7 @@
 
 /**
  * \class stdwindow
- * \brief sfml window singleton
+ * \brief SFML window singleton
  *
  * Since most programs only need one window, this class is provided to provide
  * a way to access and control it. Generally, it acts as a `pointer', using the

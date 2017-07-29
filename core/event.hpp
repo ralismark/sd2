@@ -47,7 +47,7 @@ public: // methods
 
 /**
  * \class event_queue
- * \brief event_iterator creator
+ * \brief \ref event_iterator creator
  *
  * This is a container-like class that allows iterating over the pending events
  * of a window. begin() and end() members are provided to create this

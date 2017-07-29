@@ -7,7 +7,7 @@ namespace res {
 
 	/**
 	 * \class ro_memblk
-	 * \brief non-owning readable memory block
+	 * \brief Non-owning readable memory block
 	 *
 	 * This is intended to be a raw resource similar to ro_memfile, but for
 	 * existing memory blocks. As a result, it can be used as a stand-in
