@@ -20,12 +20,14 @@
 namespace rt {
 
 	/**
+	 * \internal
 	 * \namespace rt::detail
 	 * \brief \c rt internals. Don't use directly.
 	 */
 	namespace detail {
 
 		/**
+		 * \internal
 		 * \struct exit_signaller
 		 * \brief Message to exit the program
 		 *
@@ -39,6 +41,7 @@ namespace rt {
 		};
 
 		/**
+		 * \internal
 		 * \struct skipframe_signaller
 		 * \brief Message to skip to next frame
 		 *
