@@ -5,7 +5,7 @@
 
 /**
  * \file
- * \brief delayed and repeated action base
+ * \brief Delayed and repeated action base
  *
  * This provides a basic framework for running code at a delayed time, or
  * repeated calls until a specific point in time.
@@ -24,7 +24,7 @@ namespace rt {
 
 	/**
 	 * \var frame_now
-	 * \brief time used for exec_step
+	 * \brief Time used for exec_step
 	 *
 	 * This must be set before every call to exec_step(), as it is used as
 	 * the 'current' time for delay purposes. This can also be used as a
@@ -34,7 +34,7 @@ namespace rt {
 
 	/**
 	 * \fn exec_at
-	 * \brief call a function at specified point in time
+	 * \brief Call a function at specified point in time
 	 *
 	 * This sets fn to be called with a delay, only executing when
 	 * #frame_now is past \p when during a call to exec_step().
@@ -46,7 +46,7 @@ namespace rt {
 
 	/**
 	 * \fn exec_until
-	 * \brief execute a function every tick for a time
+	 * \brief Execute a function every tick for a time
 	 *
 	 * This adds \p fn to a list of functions, and is executed every time
 	 * exec_step() is called until \p when is reached.
@@ -58,7 +58,7 @@ namespace rt {
 
 	/**
 	 * \fn exec_step
-	 * \brief call delayed/continued callbacks
+	 * \brief Call delayed/continued callbacks
 	 *
 	 * Functions registered by exec_at() or exec_until() will be called
 	 * here when appropritate, using time stored in #frame_now.

@@ -10,7 +10,7 @@ namespace rt {
 
 	/**
 	 * \namespace opt
-	 * \brief non-generic argument parser
+	 * \brief Non-generic argument parser
 	 *
 	 * The argument parser here is not generic, only parsing values for the
 	 * variables below. This should not be used directly, but instead
@@ -23,7 +23,7 @@ namespace rt {
 		 * \var a
 		 * \var b
 		 * \var c
-		 * \brief programmer-defined options
+		 * \brief Programmer-defined options
 		 *
 		 * These options allow the programmer to handle extra options
 		 * specific to their program. Their use depends on the program.
@@ -45,7 +45,7 @@ namespace rt {
 
 		/**
 		 * \fn parse
-		 * \brief parse arguments
+		 * \brief Parse arguments
 		 *
 		 * This is a large function wrapping getopt, and handles the
 		 * parsing and setting of all available options.
@@ -54,7 +54,7 @@ namespace rt {
 
 		/**
 		 * \fn next_opt
-		 * \brief get index of next argument
+		 * \brief Get index of next argument
 		 *
 		 * This returns optind, which is the index of the next
 		 * non-option argument.

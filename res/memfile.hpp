@@ -8,7 +8,7 @@ namespace res {
 
 	/**
 	 * \class ro_memfile
-	 * \brief read-only memory-mapped file
+	 * \brief Read-only memory-mapped file
 	 *
 	 * This provides a way to access files as if they were loaded in memory.
 	 */

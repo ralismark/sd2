@@ -14,7 +14,7 @@ namespace rt {
 
 	/**
 	 * \struct delay_runner
-	 * \brief helper to do delayed/continuous actions
+	 * \brief Helper to do delayed/continuous actions
 	 *
 	 * Construct this object, then use the member functions to do things
 	 * with a delay. This is nicer wrapper around rt::exec_at and
