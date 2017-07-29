@@ -7,6 +7,14 @@
 #include "include/vector.hpp"
 
 /**
+ * \file
+ * \brief SFML window wrapper
+ *
+ * This provides a global variable (#stdwin), which can be used to access a
+ * singleton window.
+ */
+
+/**
  * \class stdwindow
  * \brief SFML window singleton
  *

@@ -11,6 +11,17 @@
 #include "include/sigslots.hpp"
 
 /**
+ * \file
+ * \brief Rhyolite runtime
+ *
+ * This file has some useful utilities for the basis of a GUI program. Most
+ * notably, it has a predefine main(), which performs most setup and per-frame
+ * tasks. The user should attach callbacks to rt::on_frame, rt::on_win_event
+ * and rt::on_cleanup to perform specific tasks. This, as well as any other
+ * initialisation, can be done in initial().
+ */
+
+/**
  * \namespace rt
  * \brief Program runtime helpers
  *

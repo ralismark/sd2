@@ -6,6 +6,16 @@
 #include "include/optional.hpp"
 #include "include/vector.hpp"
 
+/**
+ * \internal
+ * \file
+ * \brief Argument parser for \c rt
+ *
+ * This file has the interface for the command line argument parser used in the
+ * predefined main(). This serves quite a specific purpose, and is probably not
+ * able to be used much elsewhere.
+ */
+
 namespace rt {
 
 	/**
