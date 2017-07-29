@@ -9,6 +9,7 @@
 namespace rt {
 
 	/**
+	 * \internal
 	 * \namespace opt
 	 * \brief Non-generic argument parser
 	 *
@@ -20,6 +21,7 @@ namespace rt {
 	namespace opt {
 
 		/**
+		 * \internal
 		 * \var a
 		 * \var b
 		 * \var c
@@ -44,6 +46,7 @@ namespace rt {
 		};
 
 		/**
+		 * \internal
 		 * \fn parse
 		 * \brief Parse arguments
 		 *
@@ -53,6 +56,7 @@ namespace rt {
 		opt_result parse(int argc, char** argv);
 
 		/**
+		 * \internal
 		 * \fn next_opt
 		 * \brief Get index of next argument
 		 *
