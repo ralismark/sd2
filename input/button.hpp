@@ -11,7 +11,7 @@
 
 /**
  * \class button
- * \brief bare button config
+ * \brief Bare button config
  *
  * This class contains a minimal set of members which are able to define a
  * button. This does not contain any functionality - that is provided by the
