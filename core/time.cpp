@@ -47,12 +47,15 @@ namespace rt {
 			return val.when < frame_now;
 		};
 
-		// process delayed execution
-		auto exec_at_end = std::find_if_not(at_queue.begin(), at_queue.end(), expired);
-		for(auto it = at_queue.begin(); it != exec_at_end; ++it) {
-			it->fn();
+		// we get expired tasks as long as they exist
+		// the tasks are ordered by time, and so are partitioned based on the expiry
+		while(!at_queue.empty() && expired(at_queue.top())) {
+			// store the iterator in case the callback adds stuff or changes the order
+			// this is why we use our own priority_list and not std::priority_queue
+			auto top_it = at_queue.begin();
+			top_it->fn();
+			at_queue.erase(top_it);
 		}
-		at_queue.erase(at_queue.begin(), exec_at_end);
 
 		// process repetition
 		for(auto&& exec : until_queue) {
