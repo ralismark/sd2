@@ -5,6 +5,7 @@
 enum class scene
 {
 	menu,
+	diff,
 	play,
 	lose,
 	map_select,
@@ -255,7 +256,7 @@ public: // methods
 
 	void unload()
 	{
-		game_state = scene::play;
+		game_state = scene::diff;
 		// start new game
 		var::score = 0;
 		reset_level();
@@ -298,3 +299,79 @@ public: // methods
 	}
 };
 
+struct diffselect
+{
+	button easy;
+	button medium;
+	button hard;
+	button super;
+	button ultra;
+public: // methods
+	diffselect()
+		: easy   ({ 100, 200, 200, 50 })
+		, medium ({ 100, 250, 200, 50 })
+		, hard   ({ 100, 300, 200, 50 })
+		, super  ({ 100, 350, 200, 50 })
+		, ultra  ({ 100, 450, 200, 50 })
+	{
+	}
+
+	void unload()
+	{
+		fade_and_exec(std::chrono::seconds{1}, [] {
+				game_state = scene::play;
+				reset_level();
+				var::bg.play();
+			});
+	}
+
+	void handle_event(const sf::Event& e)
+	{
+		auto easy_ev = easy.process(e);
+		if(contains(easy_ev.begin(), easy_ev.end(), button::event::release)) {
+			var::score = 0;
+			this->unload();
+		}
+
+		auto medium_ev = medium.process(e);
+		if(contains(medium_ev.begin(), medium_ev.end(), button::event::release)) {
+			var::score = 300;
+			this->unload();
+		}
+
+		auto hard_ev = hard.process(e);
+		if(contains(hard_ev.begin(), hard_ev.end(), button::event::release)) {
+			var::score = 800;
+			this->unload();
+		}
+
+		auto super_ev = super.process(e);
+		if(contains(super_ev.begin(), super_ev.end(), button::event::release)) {
+			var::score = 1000;
+			this->unload();
+		}
+
+		auto ultra_ev = ultra.process(e);
+		if(contains(ultra_ev.begin(), ultra_ev.end(), button::event::release)) {
+			var::score = 1500;
+			this->unload();
+		}
+	}
+
+	void render()
+	{
+		for(int i = 200; i <= 350; i += 50) {
+			sf::RectangleShape button({200, 40});
+			button.setPosition(100, i);
+			button.setFillColor(sf::Color(255, 126, 40)); // start button colour
+			stdwin->draw(button);
+		}
+
+		draw_text("Select difficulty:", {100, 100}, sf::Color::Yellow, 30);
+		draw_text("Easy",   {100, 200});
+		draw_text("Medium", {100, 250});
+		draw_text("Hard",   {100, 300});
+		draw_text("Super",  {100, 350});
+		draw_text("???",    {100, 450});
+	}
+};
