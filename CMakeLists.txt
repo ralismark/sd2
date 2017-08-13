@@ -147,5 +147,6 @@ target_link_libraries(pong runtime entityx res0)
 add_executable(chip8 examples/chip8.cpp)
 target_link_libraries(chip8 runtime)
 
-add_executable(final "true/main.cpp")
+add_executable(final WIN32 "true/main.cpp")
+target_link_libraries(final -entry:mainCRTStartup)
 target_link_libraries(final runtime sfml res0 entityx)
