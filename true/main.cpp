@@ -28,6 +28,7 @@ namespace var {
 	loss_menu lose;
 	map_select select_menu;
 	main_menu mainmenu;
+	diffselect dsmenu;
 
 	sf::Music hit;
 	sf::Music bg;
@@ -76,6 +77,9 @@ void win_events(const sf::Event& e)
 
 	if(game_state == scene::menu) {
 		var::mainmenu.handle_event(e);
+		return;
+	} else if(game_state == scene::diff) {
+		var::dsmenu.handle_event(e);
 		return;
 	} else if(game_state == scene::pause) {
 		var::pause.handle_event(e);
@@ -161,6 +165,11 @@ void full_cycle(double dt)
 {
 	if(game_state == scene::menu) {
 		var::mainmenu.render();
+		overlay_color(sf::Color(0, 0, 0, eff::fade_amount)); // hide score
+		return; // override everything
+	}
+	if(game_state == scene::diff) {
+		var::dsmenu.render();
 		overlay_color(sf::Color(0, 0, 0, eff::fade_amount)); // hide score
 		return; // override everything
 	}
