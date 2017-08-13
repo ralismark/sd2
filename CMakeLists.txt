@@ -71,6 +71,17 @@ set(ENTITYX_BUILD_SHARED false CACHE BOOL "" FORCE)
 set(ENTITYX_BUILD_TESTING false CACHE BOOL "" FORCE)
 add_subdirectory(depends/entityx)
 
+# doxygen
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+	add_custom_target(doc
+		${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		COMMENT "Generating API documentation with Doxygen" VERBATIM
+		)
+endif(DOXYGEN_FOUND)
+
 # headers
 include_directories("${PROJECT_SOURCE_DIR}")
 

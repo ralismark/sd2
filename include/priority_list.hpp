@@ -7,7 +7,7 @@
 
 /**
  * \class priority_list
- * \brief list always sorted based on a predicate
+ * \brief List always sorted based on a predicate
  *
  * Similar to a priority_queue, this guarantees that elements in the list are
  * sorted. However, the iterators to elements are not invalidated when
