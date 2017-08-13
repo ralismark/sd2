@@ -4,7 +4,7 @@ namespace rt {
 
 	delay_runner::delay_runner(clock::duration offset)
 		: future_offset(clock::duration::zero())
-		, current_offset(clock::now() + offset)
+		, current_offset(frame_now + offset)
 	{
 	}
 
@@ -22,8 +22,7 @@ namespace rt {
 
 	delay_runner& delay_runner::after()
 	{
-		future_offset = clock::duration::zero();
-		return *this;
+		return this->delay(future_offset);
 	}
 
 	delay_runner& delay_runner::also_exec(std::function<void()> fn)
