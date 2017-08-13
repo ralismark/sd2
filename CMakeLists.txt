@@ -104,11 +104,29 @@ function(res_export libname)
 	add_custom_command(
 		OUTPUT ${PROJECT_BINARY_DIR}/g/${libname}_wrap.cpp ${PROJECT_BINARY_DIR}/h/${libname}.hpp
 		COMMAND $<TARGET_FILE:cvt-wrapper> ${PROJECT_BINARY_DIR}/g/${libname}_wrap.cpp ${PROJECT_BINARY_DIR}/h/${libname}.hpp export ${PROJECT_BINARY_DIR}/g/${libname}_lib.hpp ${ARGN}
-		DEPENDS cvt-export
+		DEPENDS cvt-wrapper
 		)
 	add_library(${libname} ${PROJECT_BINARY_DIR}/g/${libname}_wrap.cpp)
 	target_link_libraries(${libname} ${libname}_res)
 endfunction()
+
+res_export(res0
+	${PROJECT_SOURCE_DIR}/store/certasans.ttf
+	${PROJECT_SOURCE_DIR}/store/opensans.ttf
+	${PROJECT_SOURCE_DIR}/store/monofonto.ttf
+	${PROJECT_SOURCE_DIR}/store/knight.png
+	${PROJECT_SOURCE_DIR}/store/dummy.png
+	${PROJECT_SOURCE_DIR}/store/queen.png
+	${PROJECT_SOURCE_DIR}/store/king.png
+	${PROJECT_SOURCE_DIR}/store/pawn.png
+	${PROJECT_SOURCE_DIR}/store/bishop.png
+	${PROJECT_SOURCE_DIR}/store/dragon.png
+	${PROJECT_SOURCE_DIR}/store/stair.png
+	${PROJECT_SOURCE_DIR}/store/room.txt
+	${PROJECT_SOURCE_DIR}/store/menu.png
+	${PROJECT_SOURCE_DIR}/store/hit.wav
+	${PROJECT_SOURCE_DIR}/store/bg.wav
+	)
 
 add_executable(evtest examples/evtest.cpp)
 target_link_libraries(evtest runtime)
@@ -123,10 +141,11 @@ target_link_libraries(sort runtime res0)
 add_executable(stars examples/stars.cpp)
 target_link_libraries(stars runtime entityx)
 
-res_export(res0 ${PROJECT_SOURCE_DIR}/store/monofonto.ttf ${PROJECT_SOURCE_DIR}/store/knight.png)
-
 add_executable(pong examples/pong.cpp)
 target_link_libraries(pong runtime entityx res0)
 
 add_executable(chip8 examples/chip8.cpp)
 target_link_libraries(chip8 runtime)
+
+add_executable(final "true/main.cpp")
+target_link_libraries(final runtime sfml res0 entityx)
