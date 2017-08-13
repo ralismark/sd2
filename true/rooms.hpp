@@ -67,19 +67,20 @@ namespace rooms {
 
 	char get_category()
 	{
-		if(var::score < 300) {
+		auto effective_score = var::score + var::score_bonus;
+		if(effective_score < 300) {
 			return 'a';
 		}
-		if(var::score < 700) {
+		if(effective_score < 700) {
 			return rng.pick({ 'a', 'b' });
 		}
-		if(var::score < 750) {
+		if(effective_score < 750) {
 			return '?'; // special level
 		}
-		if(var::score < 1000) {
+		if(effective_score < 1000) {
 			return 'b';
 		}
-		if(var::score < 1500) {
+		if(effective_score < 1500) {
 			return rng.pick({ 'b', 'c' });
 		}
 		return 'c';
