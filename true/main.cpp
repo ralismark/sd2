@@ -18,6 +18,7 @@ randutils::default_rng rng;
 namespace var {
 
 	int score = 0;
+	int score_bonus = 0;
 
 	sf::Clock clock;
 

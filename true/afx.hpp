@@ -39,6 +39,7 @@ extern randutils::default_rng rng;
 namespace var {
 
 	extern int score;
+	extern int score_bonus;
 	extern sf::Music bg;
 
 } // namespace var
