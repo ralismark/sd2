@@ -11,8 +11,19 @@
 #include "include/sigslots.hpp"
 
 /**
+ * \file
+ * \brief Rhyolite runtime
+ *
+ * This file has some useful utilities for the basis of a GUI program. Most
+ * notably, it has a predefine main(), which performs most setup and per-frame
+ * tasks. The user should attach callbacks to rt::on_frame, rt::on_win_event
+ * and rt::on_cleanup to perform specific tasks. This, as well as any other
+ * initialisation, can be done in initial().
+ */
+
+/**
  * \namespace rt
- * \brief program runtime helpers
+ * \brief Program runtime helpers
  *
  * rt acts as a framework for programs by providing generic functionality
  * required in most programs.
@@ -20,14 +31,16 @@
 namespace rt {
 
 	/**
+	 * \internal
 	 * \namespace rt::detail
-	 * \brief rt internals. Don't use directly.
+	 * \brief \c rt internals. Don't use directly.
 	 */
 	namespace detail {
 
 		/**
+		 * \internal
 		 * \struct exit_signaller
-		 * \brief message to exit the program
+		 * \brief Message to exit the program
 		 *
 		 * Do not use this class explicitly; instead use exit() to
 		 * cause an exit. Alternatively, this can be used as an
@@ -39,8 +52,9 @@ namespace rt {
 		};
 
 		/**
+		 * \internal
 		 * \struct skipframe_signaller
-		 * \brief message to skip to next frame
+		 * \brief Message to skip to next frame
 		 *
 		 * Similar to exit_signaller, do not throw this explicitly, but
 		 * use skipframe() instead.
@@ -53,7 +67,7 @@ namespace rt {
 
 	/**
 	 * \fn exit
-	 * \brief causes the program to exit
+	 * \brief Causes the program to exit
 	 *
 	 * This uses an exception to safely exit the program. Unlike the C exit
 	 * functions (exit, quick_exit), this will unwind the stack.
@@ -68,7 +82,7 @@ namespace rt {
 
 	/**
 	 * \fn skipframe
-	 * \brief skips the current frame to the next one
+	 * \brief Skips the current frame to the next one
 	 *
 	 * As with exit(), an exception is used to jump out of the stack and to
 	 * the next frame. This skips incrementing the frame counter.
@@ -78,7 +92,7 @@ namespace rt {
 
 	/**
 	 * \var on_cleanup
-	 * \brief program cleanup hook
+	 * \brief Program cleanup hook
 	 *
 	 * This is a hook which is executed when the program
 	 * is about to exit. Exit signals (from rt::exit) are not permitted
@@ -88,7 +102,7 @@ namespace rt {
 
 	/**
 	 * \var on_win_event
-	 * \brief window event hook
+	 * \brief Window event hook
 	 *
 	 * This allows the user to respond to window events e.g. mouse clicks.
 	 * These are triggered for each event, before the main frame hooks.
@@ -101,7 +115,7 @@ namespace rt {
 
 	/**
 	 * \var on_frame
-	 * \brief per-frame hook
+	 * \brief Per-frame hook
 	 *
 	 * This can be used to run things that need to happen each frame.
 	 * Priorities should be used when adding slots to enforce the execution
@@ -111,7 +125,7 @@ namespace rt {
 
 	/**
 	 * \var frame
-	 * \brief frame counter
+	 * \brief Frame counter
 	 *
 	 * This indicated the number of frames that have elapsed since the
 	 * beginning of the program.
@@ -122,7 +136,7 @@ namespace rt {
 	 * \var argc
 	 * \var argv
 	 * \var pgname
-	 * \brief program parameters
+	 * \brief Program parameters
 	 *
 	 * These are set to be the argc and argv passed to main as command line
 	 * arguments. These may be modified for internal use before being
@@ -137,7 +151,7 @@ namespace rt {
 
 	/**
 	 * \var args
-	 * \brief arguments after options
+	 * \brief Arguments after options
 	 *
 	 * This vector contains the arguments to the program, excluding
 	 * options.
@@ -148,7 +162,7 @@ namespace rt {
 
 /**
  * \fn initial
- * \brief user-defined program initialization function
+ * \brief User-defined program initialization function
  *
  * This provides a hook into main to initialize the program state. This
  * function must be defined, even if empty. This can be used
@@ -157,8 +171,8 @@ namespace rt {
 void initial();
 
 /**
- * \fn main
- * \brief main program
+ * \fn main(int argc, char** argv)
+ * \brief Main program
  *
  * This is defined by the runtime, and sets up several of its components. It
  * also handles the event loop, as well as frame events.
