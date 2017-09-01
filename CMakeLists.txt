@@ -124,9 +124,6 @@ endfunction()
 add_executable(evtest examples/evtest.cpp)
 target_link_libraries(evtest runtime)
 
-add_executable(all_check all.cpp)
-target_link_libraries(all_check sfml)
-
 add_executable(sort examples/sort.cpp)
 target_link_libraries(sort -subsystem:windows -entry:mainCRTStartup)
 target_link_libraries(sort runtime res0)
