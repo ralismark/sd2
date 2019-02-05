@@ -18,6 +18,7 @@ namespace res {
 
 		void* file;
 		void* mapping;
+		int fd;
 
 		void* view;
 		uint64_t file_size;

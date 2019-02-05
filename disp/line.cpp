@@ -30,12 +30,12 @@ namespace sf {
 		return std::sqrt(direction.x * direction.x + direction.y * direction.y);
 	}
 
-	unsigned int LineShape::getPointCount() const
+	std::size_t LineShape::getPointCount() const
 	{
 		return 4;
 	}
 
-	Vector2f LineShape::getPoint(unsigned int index) const
+	Vector2f LineShape::getPoint(std::size_t index) const
 	{
 		Vector2f unitDirection = direction / this->getLength();
 		Vector2f unitPerpendicular = {-unitDirection.y, unitDirection.x};

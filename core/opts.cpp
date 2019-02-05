@@ -2,7 +2,7 @@
 
 #include <cassert>
 #include <getopt.h>
-#include <sfml/window/windowstyle.hpp>
+#include <SFML/Window/WindowStyle.hpp>
 
 #include "include/fmt.hpp"
 

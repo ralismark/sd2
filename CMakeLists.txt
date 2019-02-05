@@ -11,18 +11,9 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 # C++17 support
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC" OR "${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC")
-	# using Visual Studio C++
-	set(CPP17_FLAG "/std:c++latest")
-	add_compile_options("/EHsc")
-elseif(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU"))
-	# using Clang or GCC
-	set(CPP17_FLAG "-std=c++1z")
-else()
-	# includes Intel C++
-	message(FATAL_MESSAGE "Compiler not supported, but may be in the future")
-endif()
-add_compile_options(${CPP17_FLAG})
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 # CRT warnings
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
@@ -54,6 +45,8 @@ configure_file(
 	"${PROJECT_SOURCE_DIR}/config.hpp.in"
 	"${PROJECT_BINARY_DIR}/h/config.hpp"
 )
+
+find_package(Threads)
 
 # sfml
 find_library(LIB_SFML_AUDIO sfml-audio)
@@ -125,7 +118,7 @@ add_executable(evtest examples/evtest.cpp)
 target_link_libraries(evtest runtime)
 
 add_executable(sort examples/sort.cpp)
-target_link_libraries(sort -subsystem:windows -entry:mainCRTStartup)
+target_link_libraries(sort ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(sort runtime res0)
 
 add_executable(stars examples/stars.cpp)
