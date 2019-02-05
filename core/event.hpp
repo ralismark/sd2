@@ -1,7 +1,7 @@
 /* -*- cpp.doxygen -*- */
 #pragma once
 
-#include <sfml/window/event.hpp>
+#include <SFML/Window/Event.hpp>
 #include "disp/window.hpp"
 
 /**

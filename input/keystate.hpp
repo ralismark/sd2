@@ -1,7 +1,7 @@
 /* -*- cpp.doxygen -*- */
 #pragma once
 
-#include <sfml/window/keyboard.hpp>
+#include <SFML/Window/Keyboard.hpp>
 
 /**
  * \class keystate
