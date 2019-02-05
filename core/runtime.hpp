@@ -6,7 +6,7 @@
 #endif
 
 #include <vector>
-#include <sfml/window/event.hpp>
+#include <SFML/Window/Event.hpp>
 
 #include "include/sigslots.hpp"
 

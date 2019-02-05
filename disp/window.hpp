@@ -1,8 +1,8 @@
 /* -*- cpp.doxygen -*- */
 #pragma once
 
-#include <sfml/window.hpp>
-#include <sfml/graphics/renderwindow.hpp>
+#include <SFML/Window.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
 
 #include "include/vector.hpp"
 

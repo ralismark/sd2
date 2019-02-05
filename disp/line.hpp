@@ -1,6 +1,6 @@
 #pragma once
 
-#include <sfml/graphics/shape.hpp>
+#include <SFML/Graphics/Shape.hpp>
 
 /**
  * \file
@@ -46,8 +46,8 @@ namespace sf {
 		/// Get the length of the line
 		float getLength() const;
 
-		virtual unsigned int getPointCount() const override;
-		virtual Vector2f getPoint(unsigned int index) const override;
+		virtual std::size_t getPointCount() const override;
+		virtual Vector2f getPoint(std::size_t index) const override;
 	};
 
 } // namespace sf

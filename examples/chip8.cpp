@@ -12,7 +12,7 @@
 #include <cassert>
 #include <cstdint>
 
-#include <sfml/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 
 #include "include/vector.hpp"
 #include "include/randutils.hpp"

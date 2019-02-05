@@ -4,8 +4,8 @@
 #include <map>
 #include <list>
 
-#include <sfml/graphics/rect.hpp>
-#include <sfml/window/event.hpp>
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/Window/Event.hpp>
 
 #include "include/vector.hpp"
 

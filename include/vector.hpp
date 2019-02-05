@@ -5,8 +5,8 @@
 // these are conversions to sf::vector, which allow velm::vector to be used
 // semi-transparently with the SFML API
 
-#include <sfml/system/vector2.hpp>
-#include <sfml/system/vector3.hpp>
+#include <SFML/System/Vector2.hpp>
+#include <SFML/System/Vector3.hpp>
 
 namespace velm { namespace usr {
 
