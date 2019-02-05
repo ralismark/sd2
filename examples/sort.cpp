@@ -2,7 +2,7 @@
 #include "include/randutils.hpp"
 #include "res0.hpp"
 
-#include <sfml/graphics.hpp>
+#include <SFML/Graphics.hpp>
 
 #include <future>
 #include <mutex>
@@ -14,7 +14,7 @@
 #include <numeric>
 #include <variant>
 
-constexpr int data_size = 3000;
+constexpr int data_size = 300;
 constexpr int data_max = data_size;
 
 template <typename Iter>

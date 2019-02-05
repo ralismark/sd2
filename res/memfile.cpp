@@ -4,12 +4,19 @@
 #include <memory>
 #include <system_error>
 
+#ifdef _MSC_VER
 #include "include/win32.hpp"
+#else
+#include <unistd.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#endif
 
 namespace res {
 
 	ro_memfile::ro_memfile()
-		: file(nullptr), mapping(nullptr), view(nullptr), file_size(0)
+		: file(nullptr), mapping(nullptr), fd(-1), view(nullptr), file_size(0)
 	{
 	}
 
@@ -36,6 +43,7 @@ namespace res {
 	{
 		this->close();
 
+#ifdef _MSC_VER
 		auto fail = [&] {
 			ec.assign(GetLastError(), std::system_category());
 			return false;
@@ -80,6 +88,37 @@ namespace res {
 		file = file_hdl.release();
 		mapping = mapping_hdl.release();
 		return true;
+#else
+		auto fail = [&] {
+			ec.assign(errno, std::generic_category());
+
+			if(fd != -1) {
+				::close(fd);
+			}
+
+			return false;
+		};
+
+		fd = ::open(filename, O_RDONLY, 0);
+		if(fd == -1) {
+			return fail();
+		}
+
+		struct stat statdata;
+		if(fstat(fd, &statdata) == -1) {
+			return fail();
+		}
+
+		file_size = statdata.st_size;
+
+		view = mmap(nullptr, file_size, PROT_READ, MAP_PRIVATE | MAP_POPULATE, fd, 0);
+		if(view == MAP_FAILED) {
+			view = nullptr;
+			return fail();
+		}
+
+		return true;
+#endif
 	}
 
 	void ro_memfile::open(const char* filename)
@@ -98,12 +137,19 @@ namespace res {
 	void ro_memfile::close()
 	{
 		if(this->is_open()) {
+#ifdef _MSC_VER
 			UnmapViewOfFile(view);
 			view = nullptr;
 			CloseHandle(mapping);
 			mapping = nullptr;
 			CloseHandle(file);
 			file = nullptr;
+#else
+			munmap(view, file_size);
+			view = nullptr;
+			::close(fd);
+			fd = -1;
+#endif
 		}
 	}
 

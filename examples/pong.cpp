@@ -6,7 +6,7 @@
 #include "include/entityx.hpp"
 #include "res0.hpp"
 
-#include <sfml/graphics.hpp>
+#include <SFML/Graphics.hpp>
 
 #include <string>
 #include <numeric>

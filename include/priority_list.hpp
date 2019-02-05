@@ -25,7 +25,7 @@ private: // internal statics
 public: // statics
 
 	using container_type = c;
-	using value_compare = std::decay_t<Compare>;
+	using value_compare = typename std::decay<Compare>::type;
 
 	using typename c::value_type;
 	using typename c::size_type;
